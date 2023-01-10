@@ -1,0 +1,36 @@
+name: SwedenMinas
+version: '${project.version}'
+main: com.redesweden.swedenminas.SwedenMinas
+api-version: 1.8.8
+authors: [ rachzy ]
+description: Plugin de Minas e Nevasca oficial do Rede Sweden
+depend: [SwedenEconomia, SwedenFlocos, SwedenMaquinas, SwedenCaixas, SwedenRanks]
+permissions:
+  swedenminas.admin:
+    description: Dá permissões de Admin ao jogador
+    default: op
+  swedenminas.fly:
+    description: Permite que os jogadores possam voar na mina
+    default: op
+  swedenminas.money2x:
+    description: Permite que os jogadores ganhem 2x mais money na mina
+    default: op
+  swedenminas.money3x:
+    description: Permite que os jogadores ganhem 3x mais money na mina
+    default: op
+  swedenminas.flocos2x:
+    description: Permite que os jogadores ganhem 2x mais flocos na mina
+    default: op
+  swedenminas.flocos3x:
+    description: Permite que os jogadores ganhem 3x mais flocos na mina
+    default: op
+commands:
+  admina:
+    description: Comandos de configuração e criação de áreas de mineração
+    usage: /<command> <args>
+  mina:
+    description: Acessa o menu de áreas de mineração
+    usage: /<command>
+  minas:
+    description: Acessa os locais de mineração
+    usage: /<command>
