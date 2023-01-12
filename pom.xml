@@ -66,6 +66,14 @@
             <id>nickuc-repo</id>
             <url>https://repo.nickuc.com/maven-releases/</url>
         </repository>
+        <repository>
+            <id>CodeMC</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -128,6 +136,18 @@
             <groupId>com.nickuc.chat</groupId>
             <artifactId>nchat-api</artifactId>
             <version>5.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bananapuncher714</groupId>
+            <artifactId>NBTEditor</artifactId>
+            <version>7.16</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.decentsoftware-eu</groupId>
+            <artifactId>decentholograms</artifactId>
+            <version>2.7.9</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

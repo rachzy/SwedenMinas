@@ -9,10 +9,18 @@ import java.util.List;
 public class GetBlocosPorPerto {
     private final List<Block> blocks = new ArrayList<>();
 
-    public GetBlocosPorPerto(Location location, int radius) {
-        for(int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
-            for(int y = location.getBlockY() - radius; y <= location.getBlockY() + radius; y++) {
-                for(int z = location.getBlockZ() - radius; z <= location.getBlockZ() + radius; z++) {
+    public GetBlocosPorPerto(Location location, int radius, boolean mesmaCamada) {
+        if (mesmaCamada) {
+            for (int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
+                for (int z = location.getBlockZ() - radius; z <= location.getBlockZ() + radius; z++) {
+                    blocks.add(location.getWorld().getBlockAt(x, (int) location.getY(), z));
+                }
+            }
+            return;
+        }
+        for (int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
+            for (int y = location.getBlockY() - radius; y <= location.getBlockY() + radius; y++) {
+                for (int z = location.getBlockZ() - radius; z <= location.getBlockZ() + radius; z++) {
                     blocks.add(location.getWorld().getBlockAt(x, y, z));
                 }
             }

@@ -1,14 +1,14 @@
 package com.redesweden.swedenminas;
 
-import com.redesweden.swedenminas.commands.AdminaCommand;
-import com.redesweden.swedenminas.commands.MinaCommand;
-import com.redesweden.swedenminas.commands.MinasCommand;
+import com.redesweden.swedenminas.commands.*;
 import com.redesweden.swedenminas.data.LeveisPicareta;
+import com.redesweden.swedenminas.data.Nevascas;
 import com.redesweden.swedenminas.data.Picaretas;
 import com.redesweden.swedenminas.data.Players;
 import com.redesweden.swedenminas.events.*;
 import com.redesweden.swedenminas.files.ConfigFile;
 import com.redesweden.swedenminas.files.MinasFile;
+import com.redesweden.swedenminas.files.NevascasFile;
 import com.redesweden.swedenminas.files.PicaretasFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,6 +30,10 @@ public final class SwedenMinas extends JavaPlugin {
         MinasFile.get().options().copyDefaults(true);
         MinasFile.save();
 
+        NevascasFile.setup();
+        NevascasFile.get().options().copyDefaults(true);
+        NevascasFile.save();
+
         PicaretasFile.setup();
         PicaretasFile.get().options().copyDefaults(true);
         PicaretasFile.save();
@@ -47,16 +51,21 @@ public final class SwedenMinas extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractionListener(), this);
         getServer().getPluginManager().registerEvents(new nChatMessageListener(), this);
+        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityClickListener(), this);
 
         // Registrar comandos
         getCommand("admina").setExecutor(new AdminaCommand());
         getCommand("mina").setExecutor(new MinaCommand());
         getCommand("minas").setExecutor(new MinasCommand());
+        getCommand("darnevasca").setExecutor(new DarNevascaCommand());
+        getCommand("nevasca").setExecutor(new NevascaCommand());
     }
 
     @Override
     public void onDisable() {
         System.out.println("Retirando jogadores da mina");
+        Nevascas.salvarNevascasAlteradas();
         Picaretas.salvarPicaretas();
         Players.removerTodos();
         System.out.println("Desativando SwedenMinas...");

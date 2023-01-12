@@ -12,6 +12,7 @@ import com.redesweden.swedenminas.files.ConfigFile;
 import com.redesweden.swedenminas.functions.GetBlocosPorPerto;
 import com.redesweden.swedenminas.functions.InstantFirework;
 import com.redesweden.swedenminas.functions.SerializeToScoreboard;
+import com.redesweden.swedenminas.types.RecompensaTipo;
 import com.redesweden.swedenranks.models.PlayerRank;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -179,9 +180,9 @@ public class PlayerMina {
                 case SORTUDO:
                     if (efeitoLuckyBlock[0]) {
                         if(level.getLevelAtual() > 0) {
-                            recompensa.set(new Recompensa(level.getLevelAtual() / 10).gerar());
+                            recompensa.set(new Recompensa(level.getLevelAtual() / 10, RecompensaTipo.MINA).gerar());
                         } else {
-                            recompensa.set(new Recompensa(1 / 10).gerar());
+                            recompensa.set(new Recompensa(1 / 10, RecompensaTipo.MINA).gerar());
                         }
 
                     }
@@ -190,7 +191,7 @@ public class PlayerMina {
                     if (level.getLevelAtual() > 0 && !quebradoComEncantamento) {
                         int chanceExplosao = new Random().nextInt(3000);
                         if (chanceExplosao <= level.getLevelAtual() / 4) {
-                            List<Block> getBlocosAoRedor = new GetBlocosPorPerto(player.getLocation(), 3).getBlocos();
+                            List<Block> getBlocosAoRedor = new GetBlocosPorPerto(player.getLocation(), 3, false).getBlocos();
 
                             getBlocosAoRedor.forEach((bloco) -> {
                                 if ((bloco.getType() != mina.getBloco().getType() || bloco.getData() != mina.getBloco().getData().getData()) && bloco.getType() != Material.GOLD_BLOCK)

@@ -24,6 +24,18 @@ permissions:
   swedenminas.flocos3x:
     description: Permite que os jogadores ganhem 3x mais flocos na mina
     default: op
+  swedenminas.amigos2:
+    description: Permite que o jogador possa adicionar até 2 amigos em sua Nevasca
+    default: op
+  swedenminas.amigos3:
+    description: Permite que o jogador possa adicionar até 3 amigos em sua Nevasca
+    default: op
+  swedenminas.amigos4:
+    description: Permite que o jogador possa adicionar até 4 amigos em sua Nevasca
+    default: op
+  swedenminas.amigos5:
+    description: Permite que o jogador possa adicionar até 5 amigos em sua Nevasca
+    default: op
 commands:
   admina:
     description: Comandos de configuração e criação de áreas de mineração
@@ -34,3 +46,14 @@ commands:
   minas:
     description: Acessa os locais de mineração
     usage: /<command>
+  darnevasca:
+    description: Dá uma nevasca à um jogador
+    usage: /<command> <alvo> <level>
+    aliases:
+      - darnevascas
+      - givenevasca
+  nevasca:
+    description: Comandos que podem ser executados para gerenciar as Nevascas
+    usage: /<command> <args>
+    aliases:
+      - nevascas
