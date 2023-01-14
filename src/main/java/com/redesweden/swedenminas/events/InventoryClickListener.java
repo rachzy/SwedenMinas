@@ -98,17 +98,15 @@ public class InventoryClickListener implements Listener {
 
                 PlayerMina playerMina = new PlayerMina(player.getName(), player.getInventory().getContents(), player.getLocation(), mina);
 
-                try {
-                    com.redesweden.swedenminas.data.Players.addPlayer(playerMina);
-                } catch (Exception ex) {
+                if(com.redesweden.swedenminas.data.Players.getPlayerPorNickname(player.getName()) != null) {
                     player.closeInventory();
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                     player.sendMessage("§2§lMINAS >> §cVocê já está em uma área de mineração. Utilize '/mina sair' para sair.");
                     return;
                 }
 
-
                 playerMina.teleportar();
+                com.redesweden.swedenminas.data.Players.addPlayer(playerMina);
             }
 
             if (tituloItem.equals("§cSair da Mina")) {
