@@ -10,10 +10,10 @@ import com.redesweden.swedenminas.data.Picaretas;
 import com.redesweden.swedenminas.files.NevascasFile;
 import com.redesweden.swedenminas.functions.InstantFirework;
 import com.redesweden.swedenminas.models.*;
+import com.redesweden.swedenminas.types.MinaTipo;
 import com.redesweden.swedenranks.data.Players;
 import com.redesweden.swedenranks.data.Ranks;
 import com.redesweden.swedenranks.models.PlayerRank;
-import com.redesweden.swedenranks.models.Rank;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,10 +50,10 @@ public class InventoryClickListener implements Listener {
             return;
         }
 
-        if(tituloInv.equalsIgnoreCase("suas caixas")) {
-            if(tituloItem != null && tituloItem.equals("§eArmazém de Recompensas")) {
+        if (tituloInv.equalsIgnoreCase("suas caixas")) {
+            if (tituloItem != null && tituloItem.equals("§eArmazém de Recompensas")) {
                 PlayerMina playerMina = com.redesweden.swedenminas.data.Players.getPlayerPorNickname(player.getName());
-                if(playerMina == null) return;
+                if (playerMina == null) return;
 
                 e.setCancelled(true);
                 player.closeInventory();
@@ -68,7 +68,7 @@ public class InventoryClickListener implements Listener {
 
             if (tituloItem == null) return;
 
-            if (tituloItem.equals("§eÁreas de Mineração")) {
+            if (tituloItem.equals("§eLocais de Mineração")) {
                 player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
                 player.openInventory(new LocaisGUI(player.getName()).get());
                 return;
@@ -80,7 +80,7 @@ public class InventoryClickListener implements Listener {
                 return;
             }
 
-            if(tituloItem.startsWith("§eBenefícios")) {
+            if (tituloItem.startsWith("§eBenefícios")) {
                 player.performCommand("site");
                 player.closeInventory();
                 return;
@@ -88,7 +88,14 @@ public class InventoryClickListener implements Listener {
 
             if (tituloItem.equals("§eIr Minerar")) {
                 PlayerRank playerRank = Players.getPlayerPorNickname(player.getName());
-                Mina mina = Minas.getMinaPorRank(playerRank.getRank());
+
+                Mina mina;
+                if (player.hasPermission("swedenminas.mina.vip") && Minas.getMinaPorId("VIP") != null) {
+                    mina = Minas.getMinaPorId("VIP");
+                } else {
+                    mina = Minas.getMinaPorId(playerRank.getRank().getId());
+                }
+
 
                 if (mina == null) {
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
@@ -98,15 +105,16 @@ public class InventoryClickListener implements Listener {
 
                 PlayerMina playerMina = new PlayerMina(player.getName(), player.getInventory().getContents(), player.getLocation(), mina);
 
-                if(com.redesweden.swedenminas.data.Players.getPlayerPorNickname(player.getName()) != null) {
+                try {
+                    com.redesweden.swedenminas.data.Players.addPlayer(playerMina);
+                } catch (Exception ex) {
                     player.closeInventory();
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                     player.sendMessage("§2§lMINAS >> §cVocê já está em uma área de mineração. Utilize '/mina sair' para sair.");
                     return;
                 }
-
                 playerMina.teleportar();
-                com.redesweden.swedenminas.data.Players.addPlayer(playerMina);
+                return;
             }
 
             if (tituloItem.equals("§cSair da Mina")) {
@@ -115,7 +123,7 @@ public class InventoryClickListener implements Listener {
                 return;
             }
 
-            if(tituloItem.equals("§eBoosters")) {
+            if (tituloItem.equals("§eBoosters")) {
                 player.performCommand("cash boosters mina");
                 return;
             }
@@ -128,12 +136,28 @@ public class InventoryClickListener implements Listener {
             if (tituloItem == null) return;
 
             if (tituloItem.startsWith("§b§lMINA")) {
-                Rank rankAlvo = Ranks.getRankPorId(Arrays.stream(tituloItem.split(" ")).toArray()[1].toString().substring(2));
-                PlayerRank playerRank = Players.getPlayerPorNickname(player.getName());
+                Mina minaAlvo = Minas.getMinaPorTitulo(Arrays.stream(tituloItem.split(" ")).toArray()[1].toString());
+                PlayerMina playerMina = new PlayerMina(player.getName(), player.getInventory().getContents(), player.getLocation(), minaAlvo);
 
-                if (Ranks.getPosicaoPorRank(playerRank.getRank()) >= Ranks.getPosicaoPorRank(rankAlvo)) {
-                    PlayerMina playerMina = new PlayerMina(player.getName(), player.getInventory().getContents(), player.getLocation(), Minas.getMinaPorRank(rankAlvo));
+                if (minaAlvo.getTipo() == MinaTipo.RANK) {
+                    PlayerRank playerRank = Players.getPlayerPorNickname(player.getName());
 
+                    if (Ranks.getPosicaoPorRank(playerRank.getRank()) >= Ranks.getPosicaoPorRank(Ranks.getRankPorId(minaAlvo.getId()))) {
+                        try {
+                            com.redesweden.swedenminas.data.Players.addPlayer(playerMina);
+                        } catch (Exception ex) {
+                            player.closeInventory();
+                            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
+                            player.sendMessage("§2§lMINAS >> §cVocê já está em uma área de mineração. Utilize '/mina sair' para sair.");
+                            return;
+                        }
+
+                        playerMina.teleportar();
+                        return;
+                    }
+                }
+
+                if ((minaAlvo.getTipo() == MinaTipo.VIP && player.hasPermission("swedenminas.mina.vip")) || minaAlvo.getTipo() == MinaTipo.PVP) {
                     try {
                         com.redesweden.swedenminas.data.Players.addPlayer(playerMina);
                     } catch (Exception ex) {
@@ -146,12 +170,13 @@ public class InventoryClickListener implements Listener {
                     playerMina.teleportar();
                     return;
                 }
+
                 player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                 player.sendMessage("§2§lMINAS >> §cVocê não tem acesso à esta mina.");
                 return;
             }
 
-            if(tituloItem.equals("§eVoltar")) {
+            if (tituloItem.equals("§eVoltar")) {
                 player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
                 player.openInventory(new MinaCommandGUI(player).get());
             }
@@ -163,7 +188,7 @@ public class InventoryClickListener implements Listener {
 
             if (tituloItem == null) return;
 
-            if(tituloItem.equals("§eVoltar")) {
+            if (tituloItem.equals("§eVoltar")) {
                 player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
                 player.openInventory(new MinaCommandGUI(player).get());
                 return;
@@ -201,8 +226,8 @@ public class InventoryClickListener implements Listener {
             playerFlocos.subFlocos(custo);
 
             PlayerMina playerMina = com.redesweden.swedenminas.data.Players.getPlayerPorNickname(player.getName());
-            if(playerMina != null) {
-                playerMina.setarScoreboard();
+            if (playerMina != null) {
+                playerMina.setarScoreboard(false);
                 player.getInventory().setItem(0, picareta.pegarPicareta(true));
             }
 
@@ -211,17 +236,17 @@ public class InventoryClickListener implements Listener {
             player.sendMessage(String.format("§2§lMINAS §e>> §aVocê evoluiu o encantamento §e%s §apara o level §b%s§a.", levelSelecionado.getMeta().getTitle(), levelSelecionado.getLevelAtual()));
         }
 
-        if(tituloInv.equalsIgnoreCase("nevasca")) {
+        if (tituloInv.equalsIgnoreCase("nevasca")) {
             e.setCancelled(true);
 
-            if(tituloItem == null) return;
+            if (tituloItem == null) return;
 
             Nevasca nevasca = Nevascas.getNevascaPorDono(player.getName());
 
-            if(tituloItem.equals("§eDar Upgrade")) {
+            if (tituloItem.equals("§eDar Upgrade")) {
                 int proximoLevel = nevasca.getLevel() + 1;
 
-                if(proximoLevel > 5) {
+                if (proximoLevel > 5) {
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                     player.sendMessage("§f§lNEVASCAS §e>> §cSua Nevasca já está no level máximo (5).");
                     player.closeInventory();
@@ -231,7 +256,7 @@ public class InventoryClickListener implements Listener {
                 BigDecimal custoProximoLevel = new BigDecimal("1500000").multiply(BigDecimal.valueOf(proximoLevel));
                 PlayerCash playerCash = com.redesweden.swedencash.data.Players.getPlayerPorNickname(player.getName());
 
-                if(playerCash.getCash().compareTo(custoProximoLevel) < 0) {
+                if (playerCash.getCash().compareTo(custoProximoLevel) < 0) {
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                     player.sendMessage("§f§lNEVASCAS §e>> §cVocê não tem CASH suficiente para evoluir sua Nevasca.");
                     return;
@@ -247,13 +272,13 @@ public class InventoryClickListener implements Listener {
                 return;
             }
 
-            if(tituloItem.equals("§eAmigos")) {
+            if (tituloItem.equals("§eAmigos")) {
                 player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
                 player.openInventory(new GerenciarAmigosGUI(player).get());
                 return;
             }
 
-            if(tituloItem.equals("§eResetar Neve")) {
+            if (tituloItem.equals("§eResetar Neve")) {
                 nevasca.iniciar();
                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 3.0F, 2F);
                 player.sendMessage("§f§lNEVASCAS §e>> §aNeves resetadas com sucesso.");
@@ -261,8 +286,8 @@ public class InventoryClickListener implements Listener {
                 return;
             }
 
-            if(tituloItem.equals("§cRemover Nevasca")) {
-                if(player.getInventory().firstEmpty() == -1 ){
+            if (tituloItem.equals("§cRemover Nevasca")) {
+                if (player.getInventory().firstEmpty() == -1) {
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                     player.sendMessage("§f§lNEVASCAS §e>> §cVocê precisa ter pelo menos 1 slot vazio em seu inventário para remover sua Nevasca.");
                     return;
@@ -274,12 +299,12 @@ public class InventoryClickListener implements Listener {
             }
         }
 
-        if(tituloInv.equalsIgnoreCase("nevasca §8- §2amigos")) {
+        if (tituloInv.equalsIgnoreCase("nevasca §8- §2amigos")) {
             e.setCancelled(true);
 
-            if(tituloItem == null) return;
+            if (tituloItem == null) return;
 
-            if(tituloItem.equals("§eVoltar")) {
+            if (tituloItem.equals("§eVoltar")) {
                 player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
                 player.openInventory(new GerenciarNevascaGUI(player.getName()).get());
                 return;
@@ -287,15 +312,15 @@ public class InventoryClickListener implements Listener {
 
             Nevasca nevasca = Nevascas.getNevascaPorDono(player.getName());
 
-            if(tituloItem.equals("§aAdicionar Amigo")) {
-                if(nevasca.getAmigos().toArray().length >= 5) {
+            if (tituloItem.equals("§aAdicionar Amigo")) {
+                if (nevasca.getAmigos().toArray().length >= 5) {
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                     player.sendMessage("§f§lNEVASCAS §e>> §cVocê já tem o limite máximo de amigos permitidos por Nevasca (5).");
                     return;
                 }
 
-                for(int i = 4; i >= 1; i--) {
-                    if(nevasca.getAmigos().toArray().length == i && !player.hasPermission(String.format("swedenminas.amigos%s", i + 1))) {
+                for (int i = 4; i >= 1; i--) {
+                    if (nevasca.getAmigos().toArray().length == i && !player.hasPermission(String.format("swedenminas.nevasca.amigos.%s", i + 1))) {
                         player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                         player.sendMessage(String.format("§f§lNEVASCAS §e>> §cVocê não tem permissão para adicionar mais que %s amigo%s à sua Nevasca.", i, i == 1 ? "" : "s"));
                         return;
@@ -321,7 +346,7 @@ public class InventoryClickListener implements Listener {
                     .findFirst()
                     .orElse(null);
 
-            if(alvo == null) return;
+            if (alvo == null) return;
 
             Player playerAlvo = Bukkit.getPlayer(alvo);
             nevasca.removerAmigo(alvo);
@@ -330,7 +355,7 @@ public class InventoryClickListener implements Listener {
             player.playSound(player.getLocation(), Sound.NOTE_PLING, 3.0F, 2F);
             player.sendMessage(String.format("§f§lNEVASCAS §7>> §eVocê removeu o jogador §b%s §ecomo amigo de sua Nevasca.", alvo));
 
-            if(playerAlvo != null && playerAlvo.isOnline()) {
+            if (playerAlvo != null && playerAlvo.isOnline()) {
                 playerAlvo.playSound(playerAlvo.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
                 playerAlvo.sendMessage(String.format("§f§lNEVASCAS §e>> §cO jogador §b%s §clhe removeu como amigo de sua Nevasca.", player.getName()));
             }

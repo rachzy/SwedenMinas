@@ -24,7 +24,7 @@ public class MinaCommandGUI {
         PlayerRank playerRank = Players.getPlayerPorNickname(player.getName());
         ItemStack locaisDeMina = new ItemStack(Material.ARMOR_STAND, 1);
         ItemMeta locaisMeta = locaisDeMina.getItemMeta();
-        locaisMeta.setDisplayName("§eÁreas de Mineração");
+        locaisMeta.setDisplayName("§eLocais de Mineração");
 
         List<String> loreLocais = new ArrayList<>();
         loreLocais.add("§7Clique para acessar");

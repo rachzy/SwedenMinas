@@ -11,6 +11,9 @@ public class SwitchWorldListener implements Listener {
     @EventHandler
     public void onPlayerSwitchWorld(PlayerChangedWorldEvent e) {
         Player player = e.getPlayer();
+
+        if(player.getWorld().getName().equalsIgnoreCase("MINA")) return;
+
         PlayerMina playerMina = Players.getPlayerPorNickname(player.getName());
 
         if(playerMina == null) return;

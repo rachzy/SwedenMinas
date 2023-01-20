@@ -13,9 +13,9 @@ import java.util.List;
 public class Players {
     private static final List<PlayerMina> playersNaMina = new ArrayList<>();
 
-    public static void addPlayer(PlayerMina player) {
+    public static void addPlayer(PlayerMina player) throws Exception {
         if (playersNaMina.stream().anyMatch(playerIn -> playerIn.getNickname().equals(player.getNickname()))) {
-            removerPlayer(player);
+            throw new Exception("Jogador já está na mina");
         }
         playersNaMina.add(player);
     }

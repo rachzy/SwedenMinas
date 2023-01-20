@@ -2,6 +2,7 @@ package com.redesweden.swedenminas.files;
 
 import com.redesweden.swedenminas.data.Minas;
 import com.redesweden.swedenminas.models.Mina;
+import com.redesweden.swedenminas.types.MinaTipo;
 import com.redesweden.swedenranks.data.Ranks;
 import com.redesweden.swedenranks.models.Rank;
 import org.bukkit.Bukkit;
@@ -33,48 +34,49 @@ public class MinasFile {
         minasFile = YamlConfiguration.loadConfiguration(file);
 
         if (minasFile.getConfigurationSection("minas") != null) {
-            for (String rankID : minasFile.getConfigurationSection("minas").getKeys(false)) {
-                Rank rank = Ranks.getRankPorId(rankID);
-                BigDecimal valorPorBloco = new BigDecimal(minasFile.getString(String.format("minas.%s.valorPorBloco", rankID)));
+            for (String id : minasFile.getConfigurationSection("minas").getKeys(false)) {
+                String titulo = minasFile.getString(String.format("minas.%s.titulo", id));
+                MinaTipo tipo = MinaTipo.valueOf(minasFile.getString(String.format("minas.%s.tipo", id)));
+                BigDecimal valorPorBloco = new BigDecimal(minasFile.getString(String.format("minas.%s.valorPorBloco", id)));
 
-                double x = minasFile.getDouble(String.format("minas.%s.spawn.x", rankID));
-                double y = minasFile.getDouble(String.format("minas.%s.spawn.y", rankID));
-                double z = minasFile.getDouble(String.format("minas.%s.spawn.z", rankID));
-                String mundo = minasFile.getString(String.format("minas.%s.spawn.mundo", rankID));
+                double x = minasFile.getDouble(String.format("minas.%s.spawn.x", id));
+                double y = minasFile.getDouble(String.format("minas.%s.spawn.y", id));
+                double z = minasFile.getDouble(String.format("minas.%s.spawn.z", id));
+                String mundo = minasFile.getString(String.format("minas.%s.spawn.mundo", id));
 
                 Location spawn = new Location(Bukkit.getWorld(mundo), x, y, z);
 
                 ItemStack bloco = new ItemStack(Material.AIR);
 
-                if(minasFile.getString(String.format("minas.%s.blocoID", rankID)) != null) {
-                    int blocoID = minasFile.getInt(String.format("minas.%s.blocoID", rankID));
-                    Integer blocoSubID = minasFile.getInt(String.format("minas.%s.blocoSubID", rankID));
+                if(minasFile.getString(String.format("minas.%s.blocoID", id)) != null) {
+                    int blocoID = minasFile.getInt(String.format("minas.%s.blocoID", id));
+                    Integer blocoSubID = minasFile.getInt(String.format("minas.%s.blocoSubID", id));
 
                     bloco = new ItemStack(blocoID, 1, blocoSubID.shortValue());
                 }
 
                 Location pos1 = null;
 
-                if (minasFile.getConfigurationSection(String.format("minas.%s.pos1", rankID)) != null) {
-                    double posX = minasFile.getDouble(String.format("minas.%s.pos1.x", rankID));
-                    double posY = minasFile.getDouble(String.format("minas.%s.pos1.y", rankID));
-                    double posZ = minasFile.getDouble(String.format("minas.%s.pos1.z", rankID));
-                    String posMundo = minasFile.getString(String.format("minas.%s.pos1.mundo", rankID));
+                if (minasFile.getConfigurationSection(String.format("minas.%s.pos1", id)) != null) {
+                    double posX = minasFile.getDouble(String.format("minas.%s.pos1.x", id));
+                    double posY = minasFile.getDouble(String.format("minas.%s.pos1.y", id));
+                    double posZ = minasFile.getDouble(String.format("minas.%s.pos1.z", id));
+                    String posMundo = minasFile.getString(String.format("minas.%s.pos1.mundo", id));
 
                     pos1 = new Location(Bukkit.getWorld(posMundo), posX, posY, posZ);
                 }
 
                 Location pos2 = null;
-                if (minasFile.getConfigurationSection(String.format("minas.%s.pos2", rankID)) != null) {
-                    double posX = minasFile.getDouble(String.format("minas.%s.pos2.x", rankID));
-                    double posY = minasFile.getDouble(String.format("minas.%s.pos2.y", rankID));
-                    double posZ = minasFile.getDouble(String.format("minas.%s.pos2.z", rankID));
-                    String posMundo = minasFile.getString(String.format("minas.%s.pos2.mundo", rankID));
+                if (minasFile.getConfigurationSection(String.format("minas.%s.pos2", id)) != null) {
+                    double posX = minasFile.getDouble(String.format("minas.%s.pos2.x", id));
+                    double posY = minasFile.getDouble(String.format("minas.%s.pos2.y", id));
+                    double posZ = minasFile.getDouble(String.format("minas.%s.pos2.z", id));
+                    String posMundo = minasFile.getString(String.format("minas.%s.pos2.mundo", id));
 
                     pos2 = new Location(Bukkit.getWorld(posMundo), posX, posY, posZ);
                 }
 
-                Mina mina = new Mina(rank, valorPorBloco, spawn, bloco, pos1, pos2);
+                Mina mina = new Mina(id, titulo, tipo, valorPorBloco, bloco, spawn, pos1, pos2);
                 Minas.addMina(mina);
                 mina.iniciarResetAutomatico();
             }
@@ -82,20 +84,22 @@ public class MinasFile {
         save();
     }
 
-    public static void novaMina(Rank rank, BigDecimal valorDoBloco, Location local) {
-        minasFile.set(String.format("minas.%s.valorPorBloco", rank.getId()), valorDoBloco);
-        minasFile.set(String.format("minas.%s.spawn.x", rank.getId()), local.getX());
-        minasFile.set(String.format("minas.%s.spawn.y", rank.getId()), local.getY());
-        minasFile.set(String.format("minas.%s.spawn.z", rank.getId()), local.getY());
-        minasFile.set(String.format("minas.%s.spawn.mundo", rank.getId()), local.getWorld().getName());
+    public static void novaMina(String id, String titulo, MinaTipo tipo, BigDecimal valorDoBloco, Location local) {
+        minasFile.set(String.format("minas.%s.titulo", id), titulo);
+        minasFile.set(String.format("minas.%s.tipo", id), tipo.toString());
+        minasFile.set(String.format("minas.%s.valorPorBloco", id), valorDoBloco);
+        minasFile.set(String.format("minas.%s.spawn.x", id), local.getX());
+        minasFile.set(String.format("minas.%s.spawn.y", id), local.getY());
+        minasFile.set(String.format("minas.%s.spawn.z", id), local.getZ());
+        minasFile.set(String.format("minas.%s.spawn.mundo", id), local.getWorld().getName());
 
-        Mina mina = new Mina(rank, valorDoBloco, local, null, null, null);
+        Mina mina = new Mina(id, titulo, tipo, valorDoBloco, null, local, null, null);
         Minas.addMina(mina);
         mina.iniciarResetAutomatico();
 
         save();
 
-        System.out.println("[SwedenMinas] Nova mina criada: " + rank.getId());
+        System.out.println("[SwedenMinas] Nova mina criada: " + id);
     }
 
     public static FileConfiguration get() {

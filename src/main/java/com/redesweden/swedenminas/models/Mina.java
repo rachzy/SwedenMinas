@@ -1,8 +1,10 @@
 package com.redesweden.swedenminas.models;
 
 import com.redesweden.swedenminas.SwedenMinas;
+import com.redesweden.swedenminas.data.Minas;
 import com.redesweden.swedenminas.data.Players;
 import com.redesweden.swedenminas.files.MinasFile;
+import com.redesweden.swedenminas.types.MinaTipo;
 import com.redesweden.swedenranks.data.Ranks;
 import com.redesweden.swedenranks.models.Rank;
 import org.bukkit.Bukkit;
@@ -17,30 +19,45 @@ import java.math.BigDecimal;
 import java.util.Random;
 
 public class Mina {
-    private final Rank rank;
+    private final String id;
+    private final String titulo;
+    private final MinaTipo tipo;
     private BigDecimal valorBloco;
+    private final int chanceLuckyBlock;
     private ItemStack bloco;
     private Location spawn;
     private Location pos1;
     private Location pos2;
 
 
-    public Mina(Rank rank, BigDecimal valorBloco, Location spawn, ItemStack bloco, Location pos1, Location pos2) {
-        this.rank = rank;
+    public Mina(String id, String titulo, MinaTipo tipo, BigDecimal valorBloco, ItemStack bloco, Location spawn, Location pos1, Location pos2) {
+        this.id = id;
+        this.titulo = titulo;
+        this.tipo = tipo;
         this.valorBloco = valorBloco;
-        this.spawn = spawn;
         this.bloco = bloco;
+        this.spawn = spawn;
         this.pos1 = pos1;
         this.pos2 = pos2;
+
+        this.chanceLuckyBlock = Bukkit.getPluginManager().getPlugin("SwedenMinas").getConfig().getInt(String.format("chance_luckyBlock_mina_%s", tipo.toString().toLowerCase()));
     }
 
     public void save(String key, Object value) {
-        MinasFile.get().set(String.format("minas.%s.%s", rank.getId(), key), value);
+        MinasFile.get().set(String.format("minas.%s.%s", id, key), value);
         MinasFile.save();
     }
 
-    public Rank getRank() {
-        return rank;
+    public String getId() {
+        return id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public MinaTipo getTipo() {
+        return tipo;
     }
 
     public BigDecimal getValorBloco() {
@@ -119,7 +136,7 @@ public class Mina {
                     Block blocoMina = pos1.getWorld().getBlockAt(new Location(pos1.getWorld(), x, y, z));
 
                     int chanceAleatoria = new Random().nextInt(21);
-                    if (chanceAleatoria < Ranks.getPosicaoPorRank(rank)) {
+                    if (chanceAleatoria < chanceLuckyBlock) {
                         blocoMina.setType(Material.GOLD_BLOCK);
                     } else {
                         blocoMina.setType(bloco.getType());
@@ -149,5 +166,19 @@ public class Mina {
         }
 
         scheduler.runTaskLater(SwedenMinas.getPlugin(SwedenMinas.class), this::iniciarResetAutomatico, 20L * 150L);
+    }
+
+    public void destroy() {
+        Players.getPlayers().forEach((player) -> {
+            if(player.getMina() != this) return;
+            player.sairDaMina(true, false);
+        });
+
+        MinasFile.get().set(String.format("minas.%s", id), null);
+        MinasFile.save();
+
+        Bukkit.getScheduler().runTaskLater(SwedenMinas.getPlugin(SwedenMinas.class), () -> {
+            Minas.removerMina(this);
+        }, 20L);
     }
 }

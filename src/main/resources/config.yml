@@ -1,1 +1,5 @@
-ip: "redesweden.tk"
+ip: "redesweden.com"
+
+chance_luckyBlock_mina_rank: 5
+chance_luckyBlock_mina_pvp: 8
+chance_luckyBlock_mina_vip: 10

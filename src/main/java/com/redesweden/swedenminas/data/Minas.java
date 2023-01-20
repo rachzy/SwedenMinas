@@ -13,8 +13,16 @@ public class Minas {
         minas.add(mina);
     }
 
-    public static Mina getMinaPorRank(Rank rank) {
-        return minas.stream().filter(mina -> mina.getRank() == rank).findFirst().orElse(null);
+    public static void removerMina(Mina mina) {
+        minas.remove(mina);
+    }
+
+    public static Mina getMinaPorId(String id) {
+        return minas.stream().filter(mina -> mina.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
+    }
+
+    public static Mina getMinaPorTitulo(String titulo) {
+        return minas.stream().filter(mina -> mina.getTitulo().equals(titulo)).findFirst().orElse(null);
     }
 
     public static List<Mina> getMinas() {

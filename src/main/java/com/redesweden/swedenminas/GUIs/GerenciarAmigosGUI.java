@@ -23,7 +23,7 @@ public class GerenciarAmigosGUI {
         if(nevasca == null) return;
 
         for(int i = 0; i <= 4; i++) {
-            if(i <= 1 || player.hasPermission(String.format("swedenminas.amigos%s", i + 1))) {
+            if(i <= 1 || player.hasPermission(String.format("swedenminas.nevasca.amigos.%s", i + 1))) {
                 try {
                     String amigo = nevasca.getAmigos().get(i);
 

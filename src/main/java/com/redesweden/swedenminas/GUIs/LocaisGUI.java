@@ -7,11 +7,14 @@ import com.redesweden.swedenflocos.models.PlayerFlocos;
 import com.redesweden.swedenminas.data.Minas;
 import com.redesweden.swedenminas.data.Picaretas;
 import com.redesweden.swedenminas.models.Picareta;
+import com.redesweden.swedenminas.types.MinaTipo;
 import com.redesweden.swedenranks.data.Ranks;
 import com.redesweden.swedenranks.models.PlayerRank;
+import com.redesweden.swedenranks.models.Rank;
 import dev.dbassett.skullcreator.SkullCreator;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,6 +26,7 @@ public class LocaisGUI {
     private Inventory inventario = Bukkit.createInventory(null, 54, "§2Locais de Mineração");
 
     public LocaisGUI(String nickname) {
+        Player player = Bukkit.getServer().getPlayer(nickname);
         PlayerSaldo playerSaldo = Players.getPlayer(nickname);
         PlayerFlocos playerFlocos = com.redesweden.swedenflocos.data.Players.getPlayerPorNickname(nickname);
         PlayerRank playerRank = com.redesweden.swedenranks.data.Players.getPlayerPorNickname(nickname);
@@ -44,24 +48,52 @@ public class LocaisGUI {
 
         Minas.getMinas().forEach(mina -> {
             int index = Minas.getMinas().indexOf(mina);
-            ItemStack minaHead = mina.getRank().getHead();
+
+            ItemStack minaHead;
+            Rank rank = null;
+
+            int posicao;
+
+            if(mina.getTipo() == MinaTipo.RANK) {
+                rank = Ranks.getRankPorId(mina.getId());
+                minaHead = rank.getHead().clone();
+                posicao = index + 28;
+            } else if(mina.getTipo() == MinaTipo.VIP) {
+                minaHead = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1ZWFlMTgwMzcxMTlkNjI4ZjY4YTQ0ZmU4ZDRiN2MyODQwM2E0MDIxZDdkOThiMDI4YjgyZDI4MTE3NmQzYSJ9fX0=");
+                posicao = 41;
+            } else {
+                minaHead = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMxZjhiNzk1MjY3ZjJlMGI2ZTRmMGIzNTIxNTllYzZmMmQ4NjQxOGEyNDZkYmUxMTNlNTM2MmNhNmI3ZWI5In19fQ==");
+                posicao = 39;
+            }
+
             ItemMeta minaMeta = minaHead.getItemMeta();
-            minaMeta.setDisplayName("§b§lMINA " + mina.getRank().getTitulo());
+            minaMeta.setDisplayName("§b§lMINA " + mina.getTitulo());
 
             List<String> loreMina = new ArrayList<>();
             loreMina.add(String.format("§7Valor p/ bloco: §a$%s", mina.getValorBloco().toString()));
             loreMina.add("");
 
-            if(Ranks.getPosicaoPorRank(playerRank.getRank()) >= Ranks.getPosicaoPorRank(mina.getRank())) {
-                loreMina.add("§eClique para teleportar");
+            if(rank != null) {
+                if(Ranks.getPosicaoPorRank(playerRank.getRank()) >= Ranks.getPosicaoPorRank(Ranks.getRankPorId(mina.getId()))) {
+                    loreMina.add("§eClique para teleportar");
+                } else {
+                    loreMina.add("§cVocê não tem acesso à essa mina");
+                }
+            } else if(mina.getTipo() == MinaTipo.VIP) {
+                if(player.hasPermission("swedenminas.mina.vip")) {
+                    loreMina.add("§eClique para teleportar");
+                } else {
+                    loreMina.add("§cVocê não tem acesso à essa mina");
+                }
             } else {
-                loreMina.add("§cVocê não tem acesso à essa mina");
+                loreMina.add("§eClique para teleportar");
             }
+
             minaMeta.setLore(loreMina);
 
             minaHead.setItemMeta(minaMeta);
 
-            inventario.setItem(index + 28, minaHead);
+            inventario.setItem(posicao, minaHead);
         });
 
         ItemStack flechaVoltar = new ItemStack(Material.ARROW, 1);

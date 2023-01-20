@@ -55,7 +55,7 @@ public class PlayerMina {
         return localPassado;
     }
 
-    public void setarScoreboard() {
+    public void setarScoreboard(Boolean iniciarLoop) {
         Player player = Bukkit.getServer().getPlayer(nickname);
         PlayerRank playerRank = com.redesweden.swedenranks.data.Players.getPlayerPorNickname(player.getName());
         PlayerSaldo playerSaldo = Players.getPlayer(player.getName());
@@ -82,7 +82,7 @@ public class PlayerMina {
         Score blank1 = objective.getScore("\u0020");
         blank1.setScore(13);
 
-        Score rank = objective.getScore(String.format(" §7Seu rank: %s", playerRank.getRank().getTituloPorLevel(playerRank.getRank().getLeveis())));
+        Score rank = objective.getScore(String.format(" §7Seu rank: %s", playerRank.getRank().getTituloPorLevel(playerRank.getLevel())));
         rank.setScore(12);
 
         Score blank2 = objective.getScore("\u0020\u0020");
@@ -112,7 +112,7 @@ public class PlayerMina {
         Score blank4 = objective.getScore("\u0020\u0020\u0020\u0020");
         blank4.setScore(3);
 
-        Score mina = objective.getScore(String.format(" §7Mina atual: %s", this.mina.getRank().getTitulo()));
+        Score mina = objective.getScore(String.format(" §7Mina atual: %s", this.mina.getTitulo()));
         mina.setScore(2);
 
         Score blank5 = objective.getScore("\u0020\u0020\u0020\u0020\u0020");
@@ -122,6 +122,11 @@ public class PlayerMina {
         ip.setScore(0);
 
         player.setScoreboard(scoreboard);
+        if(!iniciarLoop) return;
+        Bukkit.getScheduler().runTaskLater(SwedenMinas.getPlugin(SwedenMinas.class), () -> {
+            if(com.redesweden.swedenminas.data.Players.getPlayerPorNickname(nickname) == null) return;
+            setarScoreboard(true);
+        }, 20L);
     }
 
     public void teleportar() {
@@ -139,11 +144,11 @@ public class PlayerMina {
         player.teleport(mina.getSpawn());
 
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 3.0F, 1F);
-        player.sendMessage(String.format("§2§lMINAS §e>> §aVocê foi teleportado para a mina §e%s§a.", mina.getRank().getId()));
+        player.sendMessage(String.format("§2§lMINAS §e>> §aVocê foi teleportado para a mina §e%s§a.", mina.getTitulo()));
 
-        player.sendTitle("§e§lMINA", "§fVocê está na Mina do Rank " + mina.getRank().getTitulo());
+        player.sendTitle("§e§lMINA", "§fVocê está na Mina " + mina.getTitulo());
 
-        setarScoreboard();
+        setarScoreboard(true);
     }
 
     public void quebrarBloco(Boolean luckyBlock, Boolean quebradoComEncantamento, Location localBloco) {
@@ -179,7 +184,7 @@ public class PlayerMina {
                     break;
                 case SORTUDO:
                     if (efeitoLuckyBlock[0]) {
-                        if(level.getLevelAtual() > 0) {
+                        if (level.getLevelAtual() > 0) {
                             recompensa.set(new Recompensa(level.getLevelAtual() / 10, RecompensaTipo.MINA).gerar());
                         } else {
                             recompensa.set(new Recompensa(1 / 10, RecompensaTipo.MINA).gerar());
@@ -206,7 +211,7 @@ public class PlayerMina {
                     break;
                 case LASER:
                     if (level.getLevelAtual() > 0 && !quebradoComEncantamento) {
-                        int chanceLaser = new Random().nextInt(6000);
+                        int chanceLaser = new Random().nextInt(20000);
                         if (chanceLaser <= level.getLevelAtual() / 6) {
                             double xMaior = Math.max(mina.getPos1().getX(), mina.getPos2().getX());
                             double xMenor = Math.min(mina.getPos1().getX(), mina.getPos2().getX());
@@ -310,10 +315,6 @@ public class PlayerMina {
         playerSaldo.addSaldo(moneyFinal[0]);
         playerFlocos.addFlocos(flocosFinal[0]);
         player.getInventory().setItemInHand(picareta.pegarPicareta(true));
-
-        if (!quebradoComEncantamento) {
-            setarScoreboard();
-        }
     }
 
     public void sairDaMina(Boolean teleportarParaLocalPassado, Boolean sairSemRemover) {
@@ -357,21 +358,25 @@ public class PlayerMina {
         player.removePotionEffect(PotionEffectType.SPEED);
         player.removePotionEffect(PotionEffectType.FAST_DIGGING);
 
-        if (teleportarParaLocalPassado) {
-            player.teleport(localPassado);
-        }
-
-        player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
-
         if (sairSemRemover) {
             player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
             player.sendMessage("§2§lMINAS §e>> §cVocê foi retirado da mina, pois o servidor está reiniciando.");
+
+            if (teleportarParaLocalPassado) {
+                player.teleport(localPassado);
+            }
+
+            player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
         } else {
             player.sendMessage("§2§lMINA §e>> §aVocê saiu da área de mineração.");
             Bukkit.getScheduler().runTaskLater(SwedenMinas.getPlugin(SwedenMinas.class), () -> {
                 player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+                com.redesweden.swedenminas.data.Players.removerPlayer(this);
+
+                if (teleportarParaLocalPassado) {
+                    player.teleport(localPassado);
+                }
             }, 1L);
-            com.redesweden.swedenminas.data.Players.removerPlayer(this);
         }
     }
 }
