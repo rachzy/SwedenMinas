@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class PlayerMina {
     private final String nickname;
-    private final ItemStack[] inventarioPassado;
+    private ItemStack[] inventarioPassado;
     private final Location localPassado;
     private final Mina mina;
 
@@ -323,18 +323,21 @@ public class PlayerMina {
         List<ItemStack> itensNoInventario = new ArrayList<>();
 
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && item.getType() != Material.AIR && item.getType() != Material.DIAMOND_PICKAXE) {
+            if (item != null && (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().startsWith("§e§lPICARETA"))) {
                 itensNoInventario.add(item);
             }
         }
 
-        if (itensNoInventario.toArray().length > 0) {
-            player.getInventory().setItem(0, new ItemStack(Material.AIR));
+        for(ItemStack item : inventarioPassado) {
+            if(item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().startsWith("§e§lVARA DE PESCA")) {
+                item.setType(Material.AIR);
+            }
+        }
 
-            ItemStack[] inventarioMina = Arrays.stream(player.getInventory().getContents()).filter(Objects::nonNull).toArray(ItemStack[]::new);
+        if (itensNoInventario.toArray().length > 0) {
+            ItemStack[] inventarioMina = Arrays.stream(player.getInventory().getContents()).filter((item) -> item != null && (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().startsWith("§e§lPICARETA"))).toArray(ItemStack[]::new);
 
             player.getInventory().setContents(inventarioPassado);
-
 
             HashMap<Integer, ItemStack> itensQueNaoCouberam = player.getInventory().addItem(inventarioMina);
 
@@ -363,7 +366,11 @@ public class PlayerMina {
             player.sendMessage("§2§lMINAS §e>> §cVocê foi retirado da mina, pois o servidor está reiniciando.");
 
             if (teleportarParaLocalPassado) {
-                player.teleport(localPassado);
+                if(localPassado.getWorld().getName().equalsIgnoreCase("Pescador")) {
+                    player.performCommand("spawn");
+                } else {
+                    player.teleport(localPassado);
+                }
             }
 
             player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
@@ -374,7 +381,11 @@ public class PlayerMina {
                 com.redesweden.swedenminas.data.Players.removerPlayer(this);
 
                 if (teleportarParaLocalPassado) {
-                    player.teleport(localPassado);
+                    if(localPassado.getWorld().getName().equalsIgnoreCase("Pescador")) {
+                        player.performCommand("spawn");
+                    } else {
+                        player.teleport(localPassado);
+                    }
                 }
             }, 1L);
         }

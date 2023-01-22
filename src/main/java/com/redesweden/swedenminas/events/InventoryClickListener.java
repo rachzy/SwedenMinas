@@ -35,7 +35,7 @@ public class InventoryClickListener implements Listener {
 
         if (e.getClick() == ClickType.NUMBER_KEY) {
             ItemStack itemSlot0 = player.getInventory().getItem(0);
-            if (itemSlot0.hasItemMeta() && itemSlot0.getItemMeta().hasDisplayName() && itemSlot0.getItemMeta().getDisplayName().startsWith("§e§lPICARETA")) {
+            if (itemSlot0 != null && itemSlot0.hasItemMeta() && itemSlot0.getItemMeta().hasDisplayName() && itemSlot0.getItemMeta().getDisplayName().startsWith("§e§lPICARETA")) {
                 e.setCancelled(true);
                 return;
             }
@@ -87,6 +87,12 @@ public class InventoryClickListener implements Listener {
             }
 
             if (tituloItem.equals("§eIr Minerar")) {
+                if(player.getWorld().getName().equals("Pescador")) {
+                    player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
+                    player.sendMessage("§2§lMINAS §e>> §cVocê não pode ir minerar enquanto está no mundo de pescaria.");
+                    return;
+                }
+
                 PlayerRank playerRank = Players.getPlayerPorNickname(player.getName());
 
                 Mina mina;
@@ -136,6 +142,12 @@ public class InventoryClickListener implements Listener {
             if (tituloItem == null) return;
 
             if (tituloItem.startsWith("§b§lMINA")) {
+                if(player.getWorld().getName().equals("Pescador")) {
+                    player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
+                    player.sendMessage("§2§lMINAS §e>> §cVocê não pode ir minerar enquanto está no mundo de pescaria.");
+                    return;
+                }
+
                 Mina minaAlvo = Minas.getMinaPorTitulo(Arrays.stream(tituloItem.split(" ")).toArray()[1].toString());
                 PlayerMina playerMina = new PlayerMina(player.getName(), player.getInventory().getContents(), player.getLocation(), minaAlvo);
 

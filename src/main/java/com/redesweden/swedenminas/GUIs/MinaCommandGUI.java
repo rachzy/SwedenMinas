@@ -1,5 +1,7 @@
 package com.redesweden.swedenminas.GUIs;
 
+import com.redesweden.swedenminas.data.Minas;
+import com.redesweden.swedenminas.models.Mina;
 import com.redesweden.swedenminas.models.PlayerMina;
 import com.redesweden.swedenranks.data.Players;
 import com.redesweden.swedenranks.models.PlayerRank;
@@ -83,7 +85,14 @@ public class MinaCommandGUI {
             }
 
             List<String> loreMinerar = new ArrayList<>();
-            loreMinerar.add("§7Sua mina: " + playerRank.getRank().getTitulo());
+            Mina mina;
+            if (player.hasPermission("swedenminas.mina.vip") && Minas.getMinaPorId("VIP") != null) {
+                mina = Minas.getMinaPorId("VIP");
+            } else {
+                mina = Minas.getMinaPorId(playerRank.getRank().getId());
+            }
+
+            loreMinerar.add("§7Sua mina: " + mina.getTitulo());
             if(boostDeMoney != 1) {
                 loreMinerar.add("");
                 loreMinerar.add(String.format(" §a■ §fBoost de §aMoney§f: §6%sx", boostDeMoney));

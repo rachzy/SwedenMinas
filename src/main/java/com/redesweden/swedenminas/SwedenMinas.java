@@ -57,6 +57,7 @@ public final class SwedenMinas extends JavaPlugin {
         // Registrar comandos
         getCommand("admina").setExecutor(new AdminaCommand());
         getCommand("mina").setExecutor(new MinaCommand());
+        getCommand("minerar").setExecutor(new MinerarCommand());
         getCommand("minas").setExecutor(new MinasCommand());
         getCommand("darnevasca").setExecutor(new DarNevascaCommand());
         getCommand("nevasca").setExecutor(new NevascaCommand());

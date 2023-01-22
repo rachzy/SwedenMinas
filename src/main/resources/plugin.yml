@@ -65,3 +65,8 @@ commands:
     usage: /<command> <args>
     aliases:
       - nevascas
+  minerar:
+    description: Leva um jogador para a área de mineração
+    usage: /<command>
+    aliases:
+      - irminerar
