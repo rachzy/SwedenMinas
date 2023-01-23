@@ -3,13 +3,11 @@ package com.redesweden.swedenminas.events;
 import com.redesweden.swedencash.models.PlayerCash;
 import com.redesweden.swedenflocos.models.PlayerFlocos;
 import com.redesweden.swedenminas.GUIs.*;
-import com.redesweden.swedenminas.data.EventosEspeciais;
-import com.redesweden.swedenminas.data.Minas;
-import com.redesweden.swedenminas.data.Nevascas;
-import com.redesweden.swedenminas.data.Picaretas;
+import com.redesweden.swedenminas.data.*;
 import com.redesweden.swedenminas.files.NevascasFile;
 import com.redesweden.swedenminas.functions.InstantFirework;
 import com.redesweden.swedenminas.models.*;
+import com.redesweden.swedenminas.types.BoosterTipo;
 import com.redesweden.swedenminas.types.MinaTipo;
 import com.redesweden.swedenranks.data.Players;
 import com.redesweden.swedenranks.data.Ranks;
@@ -80,9 +78,9 @@ public class InventoryClickListener implements Listener {
                 return;
             }
 
-            if (tituloItem.startsWith("§eBenefícios")) {
-                player.performCommand("site");
-                player.closeInventory();
+            if (tituloItem.equals("§eBoosters")) {
+                player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
+                player.openInventory(new BoostersGUI(player).get());
                 return;
             }
 
@@ -126,11 +124,6 @@ public class InventoryClickListener implements Listener {
             if (tituloItem.equals("§cSair da Mina")) {
                 player.closeInventory();
                 player.performCommand("mina sair");
-                return;
-            }
-
-            if (tituloItem.equals("§eBoosters")) {
-                player.performCommand("cash boosters mina");
                 return;
             }
             return;
@@ -246,6 +239,49 @@ public class InventoryClickListener implements Listener {
             player.openInventory(new PicaretaGUI(player.getName()).get());
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 3.0F, 1F);
             player.sendMessage(String.format("§2§lMINAS §e>> §aVocê evoluiu o encantamento §e%s §apara o level §b%s§a.", levelSelecionado.getMeta().getTitle(), levelSelecionado.getLevelAtual()));
+        }
+
+        if(tituloInv.equalsIgnoreCase("boosters de mina")) {
+            e.setCancelled(true);
+
+            if(tituloItem == null) return;
+
+            if(tituloItem.equals("§eVoltar")) {
+                player.playSound(player.getLocation(), Sound.CLICK, 3.0F, 2F);
+                player.openInventory(new MinaCommandGUI(player).get());
+                return;
+            }
+
+            Booster booster = Boosters.getBoosters().stream().filter((boosterIn) -> boosterIn.getItem(player).isSimilar(e.getCurrentItem())).findFirst().orElse(null);
+
+            if(booster == null) return;
+
+            PlayerCash playerCash = com.redesweden.swedencash.data.Players.getPlayerPorNickname(player.getName());
+
+            String permissaoMaxima = "swedenminas.money3x";
+
+            if(booster.getTipo() == BoosterTipo.FLOCOS) {
+                permissaoMaxima = "swedenminas.flocos3x";
+            }
+
+            if(player.hasPermission(booster.getPermission()) || player.hasPermission(permissaoMaxima)) {
+                player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
+                player.sendMessage("§2§lMINAS §e>> §cVocê já tem esse boost.");
+                return;
+            }
+
+            if(playerCash.getCash().compareTo(booster.getPreco()) < 0) {
+                player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
+                player.sendMessage("§2§lMINAS §e>> §cVocê não tem CASH suficiente para comprar este produto.");
+                return;
+            }
+
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), booster.getComando(player.getName()));
+            playerCash.subCash(booster.getPreco());
+            player.playSound(player.getLocation(), Sound.LEVEL_UP, 3.0F, 1F);
+            player.sendMessage(String.format("§2§lMINAS §e>> §aVocê comprou o Boost §e%sx §apor %s.", booster.getValor(), booster.getTitulo()));
+            player.closeInventory();
+            return;
         }
 
         if (tituloInv.equalsIgnoreCase("nevasca")) {

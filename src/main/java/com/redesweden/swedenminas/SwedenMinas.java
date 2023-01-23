@@ -1,10 +1,7 @@
 package com.redesweden.swedenminas;
 
 import com.redesweden.swedenminas.commands.*;
-import com.redesweden.swedenminas.data.LeveisPicareta;
-import com.redesweden.swedenminas.data.Nevascas;
-import com.redesweden.swedenminas.data.Picaretas;
-import com.redesweden.swedenminas.data.Players;
+import com.redesweden.swedenminas.data.*;
 import com.redesweden.swedenminas.events.*;
 import com.redesweden.swedenminas.files.ConfigFile;
 import com.redesweden.swedenminas.files.MinasFile;
@@ -24,6 +21,9 @@ public final class SwedenMinas extends JavaPlugin {
 
         // Inicializar leveis
         LeveisPicareta.setup();
+
+        // Configurar boosters
+        Boosters.setup();
 
         // Inicializar arquivos
         MinasFile.setup();

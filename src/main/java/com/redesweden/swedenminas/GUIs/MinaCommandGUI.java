@@ -19,9 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MinaCommandGUI {
-    private final Inventory inventario = Bukkit.createInventory(null, 27, "§9Mina");
+    private final Inventory inventario = Bukkit.createInventory(null, 27, "§8Mina");
 
     public MinaCommandGUI(Player player) {
+        ItemStack vidroAmarelo = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 4);
+        ItemMeta vidroMeta = vidroAmarelo.getItemMeta();
+        vidroMeta.setDisplayName("§eMina");
+        vidroAmarelo.setItemMeta(vidroMeta);
+
+        for(int i = 0; i < 27; i++) {
+            inventario.setItem(i, vidroAmarelo.clone());
+        }
         PlayerMina playerMina = com.redesweden.swedenminas.data.Players.getPlayerPorNickname(player.getName());
         PlayerRank playerRank = Players.getPlayerPorNickname(player.getName());
         ItemStack locaisDeMina = new ItemStack(Material.ARMOR_STAND, 1);
@@ -49,17 +57,6 @@ public class MinaCommandGUI {
         ItemStack beneficios = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDY3ZGNlNDY0NTM0OWU0MWE3ZjM1Nzk3ZTJiOTI3OWUzNWE2NWY1ZTgxYTM0NDk2ODg1ZDI3MjY4ZjM2OTEzOSJ9fX0=");
         ItemMeta beneficiosMeta = beneficios.getItemMeta();
         beneficiosMeta.setDisplayName("§eBenefícios §aVIPs");
-
-        List<String> loreBeneficios = new ArrayList<>();
-        loreBeneficios.add("");
-        loreBeneficios.add(" §a■ §a§lVIP§7: Fly");
-        loreBeneficios.add(" §b■ §b§lICE§7: Fly + 2x Money");
-        loreBeneficios.add(" §9■ §9§lPOLAR§7: Fly + 2x Money + 2x Flocos");
-        loreBeneficios.add(" §f■ §f§lBLIZZARD§7: Fly + 3x Money + 3x Flocos");
-        loreBeneficios.add("");
-        beneficiosMeta.setLore(loreBeneficios);
-
-        beneficios.setItemMeta(beneficiosMeta);
 
         if(playerMina == null) {
             ItemStack irMinerar = new ItemStack(Material.DIAMOND_PICKAXE, 1);
@@ -133,10 +130,9 @@ public class MinaCommandGUI {
 
         boostersHead.setItemMeta(boosterMeta);
 
-        inventario.setItem(10, locaisDeMina);
-        inventario.setItem(11, encantamentos);
-        inventario.setItem(12, beneficios);
-        inventario.setItem(16, boostersHead);
+        inventario.setItem(11, locaisDeMina);
+        inventario.setItem(12, encantamentos);
+        inventario.setItem(13, boostersHead);
     }
 
     public Inventory get() {
