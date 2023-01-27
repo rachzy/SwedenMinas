@@ -11,6 +11,7 @@ import com.redesweden.swedenminas.data.Picaretas;
 import com.redesweden.swedenminas.files.ConfigFile;
 import com.redesweden.swedenminas.functions.GetBlocosPorPerto;
 import com.redesweden.swedenminas.functions.InstantFirework;
+import com.redesweden.swedenminas.functions.PastedBlock;
 import com.redesweden.swedenminas.functions.SerializeToScoreboard;
 import com.redesweden.swedenminas.types.RecompensaTipo;
 import com.redesweden.swedenranks.models.PlayerRank;
@@ -201,7 +202,8 @@ public class PlayerMina {
                             getBlocosAoRedor.forEach((bloco) -> {
                                 if ((bloco.getType() != mina.getBloco().getType() || bloco.getData() != mina.getBloco().getData().getData()) && bloco.getType() != Material.GOLD_BLOCK)
                                     return;
-                                bloco.setType(Material.AIR);
+                                PastedBlock pastedBlock = new PastedBlock(bloco.getX(), bloco.getY(), bloco.getZ(), 0, (byte) 0);
+                                PastedBlock.BlockQueue.getQueue(bloco.getWorld()).add(pastedBlock);
                                 this.quebrarBloco(bloco.getType() == Material.GOLD_BLOCK, true, null);
                             });
                             player.playSound(player.getLocation(), Sound.FIREWORK_BLAST, 1.5F, 1F);
@@ -223,8 +225,9 @@ public class PlayerMina {
                                 for (double z = zMenor; z <= zMaior; z++) {
                                     Block blocoMina = mina.getPos1().getWorld().getBlockAt(new Location(mina.getPos1().getWorld(), x, localBloco.getY(), z));
                                     if (blocoMina.getType() != Material.AIR) {
+                                        PastedBlock pastedBlock = new PastedBlock(blocoMina.getX(), blocoMina.getY(), blocoMina.getZ(), 0, (byte) 0);
+                                        PastedBlock.BlockQueue.getQueue(blocoMina.getWorld()).add(pastedBlock);
                                         this.quebrarBloco(blocoMina.getType() == Material.GOLD_BLOCK, true, null);
-                                        blocoMina.setType(Material.AIR);
                                     }
                                 }
                             }
@@ -251,8 +254,9 @@ public class PlayerMina {
                                     for (double z = zMenor; z <= zMaior; z++) {
                                         Block blocoMina = mina.getPos1().getWorld().getBlockAt(new Location(mina.getPos1().getWorld(), x, y, z));
                                         if (blocoMina.getType() != Material.AIR) {
+                                            PastedBlock pastedBlock = new PastedBlock(blocoMina.getX(), blocoMina.getY(), blocoMina.getZ(), 0, (byte) 0);
+                                            PastedBlock.BlockQueue.getQueue(blocoMina.getWorld()).add(pastedBlock);
                                             this.quebrarBloco(blocoMina.getType() == Material.GOLD_BLOCK, true, null);
-                                            blocoMina.setType(Material.AIR);
                                         }
                                     }
                                 }

@@ -4,26 +4,29 @@ import com.redesweden.swedenminas.SwedenMinas;
 import com.redesweden.swedenminas.data.Minas;
 import com.redesweden.swedenminas.data.Players;
 import com.redesweden.swedenminas.files.MinasFile;
+import com.redesweden.swedenminas.functions.PastedBlock;
 import com.redesweden.swedenminas.types.MinaTipo;
-import com.redesweden.swedenranks.data.Ranks;
-import com.redesweden.swedenranks.models.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Mina {
     private final String id;
     private final String titulo;
     private final MinaTipo tipo;
-    private BigDecimal valorBloco;
     private final int chanceLuckyBlock;
+    private BigDecimal valorBloco;
     private ItemStack bloco;
     private Location spawn;
     private Location pos1;
@@ -122,6 +125,17 @@ public class Mina {
     }
 
     public void resetar() {
+        Players.getPlayers().forEach(player -> {
+            if (player.getMina() != this) return;
+
+            Player playerB = Bukkit.getServer().getPlayer(player.getNickname());
+            if (playerB == null || !playerB.isOnline()) return;
+
+            playerB.teleport(this.getSpawn());
+            playerB.playSound(playerB.getLocation(), Sound.LEVEL_UP, 3.0F, 2F);
+            playerB.sendTitle("§e§lMINA", "§aA mina foi resetada.");
+        });
+
         double xMaior = Math.max(pos1.getX(), pos2.getX());
         double xMenor = Math.min(pos1.getX(), pos2.getX());
 
@@ -136,32 +150,26 @@ public class Mina {
                     Block blocoMina = pos1.getWorld().getBlockAt(new Location(pos1.getWorld(), x, y, z));
 
                     int chanceAleatoria = new Random().nextInt(21);
+
+                    PastedBlock pastedBlock;
+
                     if (chanceAleatoria < chanceLuckyBlock) {
-                        blocoMina.setType(Material.GOLD_BLOCK);
+                        pastedBlock = new PastedBlock((int) x, (int) y, (int) z, Material.GOLD_BLOCK.getId(), (byte) 0);
                     } else {
-                        blocoMina.setType(bloco.getType());
-                        blocoMina.setData(bloco.getData().getData());
+                        pastedBlock = new PastedBlock((int) x, (int) y, (int) z, bloco.getTypeId(), bloco.getData().getData());
                     }
 
+                    PastedBlock.BlockQueue.getQueue(blocoMina.getWorld()).add(pastedBlock);
                 }
             }
         }
 
-        Players.getPlayers().forEach(player -> {
-            if(player.getMina() != this) return;
-
-            Player playerB = Bukkit.getServer().getPlayer(player.getNickname());
-            if(playerB == null || !playerB.isOnline()) return;
-
-            playerB.teleport(this.getSpawn());
-            playerB.sendTitle("§e§lMINA", "§aA mina foi resetada.");
-        });
     }
 
     public void iniciarResetAutomatico() {
         BukkitScheduler scheduler = Bukkit.getScheduler();
 
-        if(pos1 != null && pos2 != null) {
+        if (pos1 != null && pos2 != null && Players.getPlayers().stream().anyMatch(player -> player.getMina() == this)) {
             resetar();
         }
 
@@ -170,7 +178,7 @@ public class Mina {
 
     public void destroy() {
         Players.getPlayers().forEach((player) -> {
-            if(player.getMina() != this) return;
+            if (player.getMina() != this) return;
             player.sairDaMina(true, false);
         });
 

@@ -56,8 +56,9 @@ public class LocaisGUI {
 
             if(mina.getTipo() == MinaTipo.RANK) {
                 rank = Ranks.getRankPorId(mina.getId());
+                int indexRank = Ranks.getPosicaoPorRank(rank);
                 minaHead = rank.getHead().clone();
-                posicao = index + 28;
+                posicao = indexRank + 27;
             } else if(mina.getTipo() == MinaTipo.VIP) {
                 minaHead = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1ZWFlMTgwMzcxMTlkNjI4ZjY4YTQ0ZmU4ZDRiN2MyODQwM2E0MDIxZDdkOThiMDI4YjgyZDI4MTE3NmQzYSJ9fX0=");
                 posicao = 41;

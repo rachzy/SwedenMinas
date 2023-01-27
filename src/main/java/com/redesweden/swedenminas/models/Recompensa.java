@@ -51,8 +51,6 @@ public class Recompensa {
             chanceAdicional = 1 + (sorte / 2);
         }
 
-        System.out.println(chanceAdicional);
-
         if(chance >= 350 * chanceAdicional) {
             return new ItemStack(Material.AIR);
         }

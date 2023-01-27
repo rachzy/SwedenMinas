@@ -31,7 +31,7 @@ public class NevascaCommand implements CommandExecutor {
             return true;
         }
 
-        sender.sendMessage("§f§lNEVASCAS §e>> c§lSub-comando não encontrado.");
+        sender.sendMessage("§f§lNEVASCAS §e>> §cSub-comando não encontrado.");
         return true;
     }
 }

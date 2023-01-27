@@ -9,10 +9,7 @@ import com.redesweden.swedenminas.types.RecompensaTipo;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import io.github.bananapuncher714.nbteditor.NBTEditor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -61,7 +58,7 @@ public class Nevasca {
     public void addLevel() {
         this.level += 1;
         Nevascas.addNevascaAlterada(this);
-        DHAPI.setHologramLine(holograma,0, 1, String.format("§7Level: §e%s", level));
+        DHAPI.setHologramLine(holograma, 0, 1, String.format("§7Level: §e%s", level));
     }
 
     public List<String> getAmigos() {
@@ -120,7 +117,7 @@ public class Nevasca {
         ItemStack recompensa = new Recompensa(level, RecompensaTipo.NEVASCA).gerar();
         String itemTitulo;
 
-        if(recompensa.hasItemMeta()) {
+        if (recompensa.hasItemMeta()) {
             itemTitulo = recompensa.getItemMeta().getDisplayName();
         } else {
             itemTitulo = "§enada :(";
@@ -130,7 +127,7 @@ public class Nevasca {
 
         HashMap<Integer, ItemStack> itemNaoCoube = player.getInventory().addItem(recompensa);
 
-        if(itemNaoCoube != null && itemNaoCoube.size() > 0) {
+        if (itemNaoCoube != null && itemNaoCoube.size() > 0) {
             player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
             player.sendMessage("§f§lNEVASCAS §e>> §cVocê não tem mais espaço suficiente em seu inventário, esvazie-o.");
         }
@@ -150,14 +147,14 @@ public class Nevasca {
 
         boolean snowManSpawnado = false;
 
-        for(Entity entidade : Bukkit.getWorld(local.getWorld().getName()).getNearbyEntities(local, 1, 1, 1)) {
-            if(entidade.getType() == EntityType.SNOWMAN) {
+        for (Entity entidade : Bukkit.getWorld(local.getWorld().getName()).getNearbyEntities(local, 1, 1, 1)) {
+            if (entidade.getType() == EntityType.SNOWMAN) {
                 snowManSpawnado = true;
                 break;
             }
         }
 
-        if(!snowManSpawnado) {
+        if (!snowManSpawnado) {
             Entity snowGolem = Bukkit.getWorld(local.getWorld().getName()).spawnEntity(local.clone().add(0.5, 0, 0.5), EntityType.SNOWMAN);
             NBTEditor.set(snowGolem, true, "NoAI");
             NBTEditor.set(snowGolem, true, "Invulnerable");
@@ -165,12 +162,12 @@ public class Nevasca {
     }
 
     public void desativar(Player dono) {
-        if(this.holograma != null) {
+        if (this.holograma != null) {
             this.holograma.delete();
         }
 
-        for(Entity entidade : dono.getNearbyEntities(3, 2, 3)) {
-            if(entidade.getType() == EntityType.SNOWMAN) {
+        for (Entity entidade : dono.getNearbyEntities(3, 2, 3)) {
+            if (entidade.getType() == EntityType.SNOWMAN) {
                 entidade.remove();
                 break;
             }

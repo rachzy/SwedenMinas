@@ -1,5 +1,6 @@
 package com.redesweden.swedenminas.files;
 
+import com.redesweden.swedenminas.SwedenMinas;
 import com.redesweden.swedenminas.data.Minas;
 import com.redesweden.swedenminas.models.Mina;
 import com.redesweden.swedenminas.types.MinaTipo;
@@ -34,6 +35,7 @@ public class MinasFile {
         minasFile = YamlConfiguration.loadConfiguration(file);
 
         if (minasFile.getConfigurationSection("minas") != null) {
+            int index = 0;
             for (String id : minasFile.getConfigurationSection("minas").getKeys(false)) {
                 String titulo = minasFile.getString(String.format("minas.%s.titulo", id));
                 MinaTipo tipo = MinaTipo.valueOf(minasFile.getString(String.format("minas.%s.tipo", id)));
@@ -78,7 +80,10 @@ public class MinasFile {
 
                 Mina mina = new Mina(id, titulo, tipo, valorPorBloco, bloco, spawn, pos1, pos2);
                 Minas.addMina(mina);
-                mina.iniciarResetAutomatico();
+
+                mina.resetar();
+                Bukkit.getScheduler().runTaskLater(SwedenMinas.getPlugin(SwedenMinas.class), mina::iniciarResetAutomatico, 20L * 20L * ((long) index));
+                index++;
             }
         }
         save();
