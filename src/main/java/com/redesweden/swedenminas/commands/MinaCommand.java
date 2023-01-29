@@ -1,5 +1,6 @@
 package com.redesweden.swedenminas.commands;
 
+import com.redesweden.swedenminas.GUIs.BoostersGUI;
 import com.redesweden.swedenminas.GUIs.MinaCommandGUI;
 import com.redesweden.swedenminas.data.Players;
 import com.redesweden.swedenminas.models.PlayerMina;
@@ -35,6 +36,13 @@ public class MinaCommand implements CommandExecutor {
             }
 
             playerMina.sairDaMina(true, false);
+            return true;
+        }
+
+        if(args[0].equals("boosters")) {
+            player.playSound(player.getLocation(), Sound.NOTE_PLING, 3.0F, 2F);
+            player.openInventory(new BoostersGUI(player).get());
+            player.sendMessage("§2§lMINAS §e>> §aVocê abriu o menu de boosters.");
             return true;
         }
 

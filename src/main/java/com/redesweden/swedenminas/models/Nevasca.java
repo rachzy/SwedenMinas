@@ -136,29 +136,32 @@ public class Nevasca {
     public void iniciar() {
         setarHolograma();
 
-        List<Block> blocosAoRedor = new GetBlocosPorPerto(local, 2, true).getBlocos();
+        List<Block> blocosAoRedor = new GetBlocosPorPerto(local, 2, true, false).getBlocos();
         blocosAoRedor.forEach(bloco -> {
             if (bloco.getLocation().getY() != local.getY()) return;
 
             Bukkit.getScheduler().runTaskLater(SwedenMinas.getPlugin(SwedenMinas.class), () -> {
+                bloco.getLocation().clone().subtract(0, 1, 0).getBlock().setType(Material.SNOW_BLOCK);
                 bloco.setType(Material.SNOW);
             }, 1L);
         });
 
-        boolean snowManSpawnado = false;
+        Bukkit.getScheduler().runTaskLater(SwedenMinas.getPlugin(SwedenMinas.class), () -> {
+            boolean snowManSpawnado = false;
 
-        for (Entity entidade : Bukkit.getWorld(local.getWorld().getName()).getNearbyEntities(local, 1, 1, 1)) {
-            if (entidade.getType() == EntityType.SNOWMAN) {
-                snowManSpawnado = true;
-                break;
+            for (Entity entidade : Bukkit.getWorld(local.getWorld().getName()).getNearbyEntities(local, 1, 1, 1)) {
+                if (entidade.getType() == EntityType.SNOWMAN) {
+                    snowManSpawnado = true;
+                    break;
+                }
             }
-        }
 
-        if (!snowManSpawnado) {
-            Entity snowGolem = Bukkit.getWorld(local.getWorld().getName()).spawnEntity(local.clone().add(0.5, 0, 0.5), EntityType.SNOWMAN);
-            NBTEditor.set(snowGolem, true, "NoAI");
-            NBTEditor.set(snowGolem, true, "Invulnerable");
-        }
+            if (!snowManSpawnado) {
+                Entity snowGolem = Bukkit.getWorld(local.getWorld().getName()).spawnEntity(local.clone().add(0.5, 0, 0.5), EntityType.SNOWMAN);
+                NBTEditor.set(snowGolem, true, "NoAI");
+                NBTEditor.set(snowGolem, true, "Invulnerable");
+            }
+        }, 5L);
     }
 
     public void desativar(Player dono) {
@@ -177,7 +180,7 @@ public class Nevasca {
         dono.playSound(dono.getLocation(), Sound.NOTE_PLING, 3.0F, 2F);
         dono.sendMessage("§f§lNEVASCAS §e>> §aVocê removeu sua Nevasca.");
 
-        List<Block> blocosAoRedor = new GetBlocosPorPerto(local, 2, true).getBlocos();
+        List<Block> blocosAoRedor = new GetBlocosPorPerto(local, 2, true, false).getBlocos();
         blocosAoRedor.forEach(bloco -> {
             if (bloco.getLocation().getY() != local.getY()) return;
 

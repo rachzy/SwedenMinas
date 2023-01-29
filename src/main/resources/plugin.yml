@@ -5,45 +5,41 @@ api-version: 1.8.8
 authors: [ rachzy ]
 description: Plugin de Minas e Nevasca oficial do Rede Sweden
 softdepend: [SwedenCaixas]
-depend: [SwedenEconomia, SwedenFlocos, SwedenMaquinas, SwedenRanks]
+depend: [SwedenEconomia, SwedenFlocos, SwedenMaquinas, SwedenRanks, PlotSquared, MultiWorld]
 permissions:
-  swedenminas:
-    admin:
-      description: Dá permissões de Admin ao jogador
-      default: op
-    fly:
-      description: Permite que os jogadores possam voar na mina
-      default: op
-    money2x:
-      description: Permite que os jogadores ganhem 2x mais money na mina
-      default: op
-    money3x:
-      description: Permite que os jogadores ganhem 3x mais money na mina
-      default: op
-    flocos2x:
-      description: Permite que os jogadores ganhem 2x mais flocos na mina
-      default: op
-    flocos3x:
-      description: Permite que os jogadores ganhem 3x mais flocos na mina
-      default: op
-    mina:
-      vip:
-        description: Permite que o jogador acesse a Mina VIP
-        default: op
-    nevasca:
-      amigos:
-        2:
-          description: Permite que o jogador possa adicionar até 2 amigos em sua Nevasca
-          default: op
-        3:
-          description: Permite que o jogador possa adicionar até 3 amigos em sua Nevasca
-          default: op
-        4:
-          description: Permite que o jogador possa adicionar até 4 amigos em sua Nevasca
-          default: op
-        5:
-          description: Permite que o jogador possa adicionar até 5 amigos em sua Nevasca
-          default: op
+  swedenminas.admin:
+    description: Dá permissões de Admin ao jogador
+    default: op
+  swedenminas.fly:
+    description: Permite que os jogadores possam voar na mina
+    default: op
+  swedenminas.money2x:
+    description: Permite que os jogadores ganhem 2x mais money na mina
+    default: op
+  swedenminas.money3x:
+    description: Permite que os jogadores ganhem 3x mais money na mina
+    default: op
+  swedenminas.flocos2x:
+    description: Permite que os jogadores ganhem 2x mais flocos na mina
+    default: op
+  swedenminas.flocos3x:
+    description: Permite que os jogadores ganhem 3x mais flocos na mina
+    default: op
+  swedenminas.mina.vip:
+    description: Permite que o jogador acesse a Mina VIP
+    default: op
+  swedenminas.nevasca.amigos.2:
+    description: Permite que o jogador possa adicionar até 2 amigos em sua Nevasca
+    default: op
+  swedenminas.nevasca.amigos.3:
+    description: Permite que o jogador possa adicionar até 3 amigos em sua Nevasca
+    default: op
+  swedenminas.nevasca.amigos.4:
+    description: Permite que o jogador possa adicionar até 4 amigos em sua Nevasca
+    default: op
+  swedenminas.nevasca.amigos.5:
+    description: Permite que o jogador possa adicionar até 5 amigos em sua Nevasca
+    default: op
 commands:
   admina:
     description: Comandos de configuração e criação de áreas de mineração
@@ -70,3 +66,10 @@ commands:
     usage: /<command>
     aliases:
       - irminerar
+  lanterna:
+    description: Ativa ou desativa a lanterna
+    usage: /<command>
+    aliases:
+      - flashlight
+      - fullbright
+      - luz

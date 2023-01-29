@@ -61,6 +61,7 @@ public final class SwedenMinas extends JavaPlugin {
         getCommand("minas").setExecutor(new MinasCommand());
         getCommand("darnevasca").setExecutor(new DarNevascaCommand());
         getCommand("nevasca").setExecutor(new NevascaCommand());
+        getCommand("lanterna").setExecutor(new LanternaCommand());
     }
 
     @Override

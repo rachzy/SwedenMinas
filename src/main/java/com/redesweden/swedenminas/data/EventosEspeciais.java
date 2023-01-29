@@ -4,9 +4,10 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EventosEspeciais {
-    private static final List<Player> playersAdicionandoAmigo = new ArrayList<>();
+    private static List<Player> playersAdicionandoAmigo = new ArrayList<>();
 
     public static void addPlayerAdicionandoAmigo(Player player) {
         removerPlayerAdicionandoAmigo(player);
@@ -18,6 +19,6 @@ public class EventosEspeciais {
     }
 
     public static void removerPlayerAdicionandoAmigo(Player player) {
-        playersAdicionandoAmigo.remove(player);
+        playersAdicionandoAmigo = playersAdicionandoAmigo.stream().filter(playerIn -> !playerIn.getName().equals(player.getName())).collect(Collectors.toList());
     }
 }

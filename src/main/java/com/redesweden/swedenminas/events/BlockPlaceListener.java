@@ -20,7 +20,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class BlockPlaceListener implements Listener {
     @EventHandler
@@ -44,21 +43,26 @@ public class BlockPlaceListener implements Listener {
             return;
         }
 
-        Nevasca nevascaProxima = null;
-        List<Block> blocosPorPerto = new GetBlocosPorPerto(player.getLocation(), 7, true).getBlocos();
+        boolean blocoProximo = false;
+        List<Block> blocosPorPerto = new GetBlocosPorPerto(e.getBlockPlaced().getLocation().clone(), 3, false, true).getBlocos();
 
         for(Block bloco : blocosPorPerto) {
-            Nevasca nevascaLocal = Nevascas.getNevascaPorLocal(bloco.getLocation());
-            if(nevascaLocal != null) {
-                nevascaProxima = nevascaLocal;
+            if(bloco != null
+                    && bloco.getType() != Material.AIR
+                    && (bloco.getLocation().getX() != e.getBlockPlaced().getLocation().getX()
+                    || bloco.getLocation().getY() != e.getBlockPlaced().getLocation().getY()
+                    || bloco.getLocation().getZ() != e.getBlockPlaced().getLocation().getZ())
+            ) {
+                System.out.println(bloco.getType());
+                blocoProximo = true;
                 break;
             }
         }
 
-        if(nevascaProxima != null) {
+        if(blocoProximo) {
             e.setCancelled(true);
             player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
-            player.sendMessage("§f§lNEVASCAS §e>> §cExiste uma nevasca muito próxima desta.");
+            player.sendMessage("§f§lNEVASCAS §e>> §cVocê está muito próximo de um outro bloco ou do limite da sua plot. Por favor, coloque sua Nevasca em um lugar mais vazio.");
             return;
         }
 
@@ -67,10 +71,6 @@ public class BlockPlaceListener implements Listener {
         }, 1L);
 
         NevascasFile.novaNevasca(player, level, local);
-
-        Entity snowGolem = Bukkit.getWorld(local.getWorld().getName()).spawnEntity(local.clone().add(0.5, 0, 0.5), EntityType.SNOWMAN);
-        NBTEditor.set(snowGolem, true, "NoAI");
-        NBTEditor.set(snowGolem, true, "Invulnerable");
 
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 3.0F, 2F);
         player.sendMessage("§f§lNEVASCAS §e>> §aVocê colocou uma nova Nevasca. Aproveite!");

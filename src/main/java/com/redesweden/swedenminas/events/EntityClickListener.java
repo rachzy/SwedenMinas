@@ -18,7 +18,7 @@ public class EntityClickListener implements Listener {
     @EventHandler
     public void onEntityClick(PlayerInteractEntityEvent e) {
         if(e.getRightClicked().getType() != EntityType.SNOWMAN) return;
-        List<Block> blocosPorPerto = new GetBlocosPorPerto(e.getRightClicked().getLocation(), 1, false).getBlocos();
+        List<Block> blocosPorPerto = new GetBlocosPorPerto(e.getRightClicked().getLocation(), 1, false, false).getBlocos();
         Nevasca nevasca = null;
 
         for(Block bloco : blocosPorPerto) {

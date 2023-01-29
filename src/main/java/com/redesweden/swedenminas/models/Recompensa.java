@@ -23,7 +23,7 @@ public class Recompensa {
 
     public ItemStack gerar() {
         if(tipo == RecompensaTipo.MINA) {
-            int chance = new Random().nextInt(101);
+            int chance = new Random().nextInt(201);
             if(chance >= 50 + sorte) {
                 return new ItemStack(Material.AIR);
             }
@@ -43,7 +43,7 @@ public class Recompensa {
             return new MaquinasFactory(TipoMaquina.CASH, new BigDecimal("50")).criar();
         }
 
-        int chance = new Random().nextInt(1701);
+        int chance = new Random().nextInt(2301);
 
         int chanceAdicional = 1;
 

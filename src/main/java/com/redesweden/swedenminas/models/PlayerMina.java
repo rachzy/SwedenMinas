@@ -177,7 +177,7 @@ public class PlayerMina {
                     break;
                 case INVOCADOR:
                     if (level.getLevelAtual() != 0) {
-                        int chanceLuckyBlock = new Random().nextInt(1000);
+                        int chanceLuckyBlock = new Random().nextInt(1801);
                         if (chanceLuckyBlock <= level.getLevelAtual() / 2) {
                             efeitoLuckyBlock[0] = true;
                         }
@@ -195,9 +195,9 @@ public class PlayerMina {
                     break;
                 case EXPLOSAO:
                     if (level.getLevelAtual() > 0 && !quebradoComEncantamento) {
-                        int chanceExplosao = new Random().nextInt(3000);
+                        int chanceExplosao = new Random().nextInt(15000);
                         if (chanceExplosao <= level.getLevelAtual() / 4) {
-                            List<Block> getBlocosAoRedor = new GetBlocosPorPerto(player.getLocation(), 3, false).getBlocos();
+                            List<Block> getBlocosAoRedor = new GetBlocosPorPerto(player.getLocation(), 3, false, false).getBlocos();
 
                             getBlocosAoRedor.forEach((bloco) -> {
                                 if ((bloco.getType() != mina.getBloco().getType() || bloco.getData() != mina.getBloco().getData().getData()) && bloco.getType() != Material.GOLD_BLOCK)
@@ -213,7 +213,7 @@ public class PlayerMina {
                     break;
                 case LASER:
                     if (level.getLevelAtual() > 0 && !quebradoComEncantamento) {
-                        int chanceLaser = new Random().nextInt(20000);
+                        int chanceLaser = new Random().nextInt(60000);
                         if (chanceLaser <= level.getLevelAtual() / 6) {
                             double xMaior = Math.max(mina.getPos1().getX(), mina.getPos2().getX());
                             double xMenor = Math.min(mina.getPos1().getX(), mina.getPos2().getX());
@@ -238,8 +238,8 @@ public class PlayerMina {
                     break;
                 case SUPER:
                     if (level.getLevelAtual() > 0 && !quebradoComEncantamento) {
-                        int chanceExplosao = new Random().nextInt(40000);
-                        if (chanceExplosao <= level.getLevelAtual() / 45) {
+                        int chanceSuper = new Random().nextInt(60000);
+                        if (chanceSuper <= level.getLevelAtual() / 45) {
                             double xMaior = Math.max(mina.getPos1().getX(), mina.getPos2().getX());
                             double xMenor = Math.min(mina.getPos1().getX(), mina.getPos2().getX());
 

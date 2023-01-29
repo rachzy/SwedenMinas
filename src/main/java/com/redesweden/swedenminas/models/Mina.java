@@ -149,7 +149,7 @@ public class Mina {
                 for (double z = zMenor; z <= zMaior; z++) {
                     Block blocoMina = pos1.getWorld().getBlockAt(new Location(pos1.getWorld(), x, y, z));
 
-                    int chanceAleatoria = new Random().nextInt(21);
+                    int chanceAleatoria = new Random().nextInt(61);
 
                     PastedBlock pastedBlock;
 

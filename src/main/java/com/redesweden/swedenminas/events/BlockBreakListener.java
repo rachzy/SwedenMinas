@@ -28,19 +28,26 @@ public class BlockBreakListener implements Listener {
         Player player = e.getPlayer();
         PlayerMina playerMina = Players.getPlayerPorNickname(player.getName());
 
-        if(e.getBlock().getType() == Material.SNOW) {
-            List<Block> blocosAoRedor = new GetBlocosPorPerto(e.getBlock().getLocation(), 2, true).getBlocos();
+        if(e.getBlock().getType() == Material.SNOW || e.getBlock().getType() == Material.SNOW_BLOCK) {
+            List<Block> blocosAoRedor = new GetBlocosPorPerto(e.getBlock().getLocation(), 2, true, false).getBlocos();
 
             AtomicReference<Nevasca> nevasca = new AtomicReference<>(null);
             blocosAoRedor.forEach((bloco) -> {
                 if(nevasca.get() != null) return;
                 Nevasca nevascaBloco = Nevascas.getNevascaPorLocal(bloco.getLocation());
 
-                if(nevascaBloco == null) return;
+                if(nevascaBloco == null) {
+                    nevascaBloco = Nevascas.getNevascaPorLocal(bloco.getLocation().clone().add(0, 1, 0));
+                    if(nevascaBloco == null) return;
+                }
                 nevasca.set(nevascaBloco);
             });
 
             if(nevasca.get() != null) {
+                if(e.getBlock().getType() != Material.SNOW_BLOCK) {
+                    e.getBlock().getLocation().clone().subtract(0, 1, 0).getBlock().setType(Material.SNOW_BLOCK);
+                }
+
                 e.setCancelled(true);
                 if(!nevasca.get().getDono().equals(player.getName()) && !nevasca.get().getAmigos().contains(player.getName())) {
                     player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 3.0F, 0.5F);
