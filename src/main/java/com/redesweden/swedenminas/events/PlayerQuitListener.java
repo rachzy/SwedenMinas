@@ -14,6 +14,7 @@ public class PlayerQuitListener implements Listener {
         Player player = e.getPlayer();
 
         EventosEspeciais.removerPlayerAdicionandoAmigo(player);
+        EventosEspeciais.removerPlayerAlterandoMultiplicador(player);
 
         PlayerMina playerMina = Players.getPlayerPorNickname(player.getName());
 

@@ -30,9 +30,22 @@ public class MinaCommandGUI {
         for(int i = 0; i < 27; i++) {
             inventario.setItem(i, vidroAmarelo.clone());
         }
+
         PlayerMina playerMina = com.redesweden.swedenminas.data.Players.getPlayerPorNickname(player.getName());
         PlayerRank playerRank = Players.getPlayerPorNickname(player.getName());
-        ItemStack locaisDeMina = new ItemStack(Material.ARMOR_STAND, 1);
+
+        ItemStack topItem = new ItemStack(Material.ARMOR_STAND, 1);
+        ItemMeta topMeta = topItem.getItemMeta();
+        topMeta.setDisplayName("§eTop 10");
+
+        List<String> loreTop = new ArrayList<>();
+        loreTop.add("§7Clique para ver o TOP 10 de");
+        loreTop.add("§7jogadores que mais quebraram blocos");
+        topMeta.setLore(loreTop);
+
+        topItem.setItemMeta(topMeta);
+
+        ItemStack locaisDeMina = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI5ZmE4Y2Q4NGFjMTI1MDIxZDYyMDFhMTQ4YTllODYyYzBiNzcyYzQ4NDc3YjA2YzE5MTQ1YzRhNjczYWEyNCJ9fX0=");
         ItemMeta locaisMeta = locaisDeMina.getItemMeta();
         locaisMeta.setDisplayName("§eLocais de Mineração");
 
@@ -105,7 +118,7 @@ public class MinaCommandGUI {
 
             irMinerar.setItemMeta(irMinerarMeta);
             irMinerar.addEnchantment(Enchantment.DURABILITY, 1);
-            inventario.setItem(15, irMinerar);
+            inventario.setItem(16, irMinerar);
         } else {
             ItemStack sairItem = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWVhNmFmNzBlZWVjNmZiMTkwMjJjODFlNTZmZjcyYmNjNWY4ZjBmM2UwODcyMWEyM2UzMGRkMWMxZjllMGNmMiJ9fX0=");
             ItemMeta sairMeta = sairItem.getItemMeta();
@@ -116,7 +129,7 @@ public class MinaCommandGUI {
             sairMeta.setLore(loreSair);
 
             sairItem.setItemMeta(sairMeta);
-            inventario.setItem(15, sairItem);
+            inventario.setItem(16, sairItem);
         }
 
         ItemStack boostersHead = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU2OGI5NjgxMDhlOTRjZWU0OWEzOTBkMGY4NDQ5YTNiZGMxYjFlNTg1NTVmMDlhZWRhNGNmYjZjYTcxMGMxMSJ9fX0=");
@@ -130,8 +143,9 @@ public class MinaCommandGUI {
 
         boostersHead.setItemMeta(boosterMeta);
 
-        inventario.setItem(11, locaisDeMina);
-        inventario.setItem(12, encantamentos);
+        inventario.setItem(10, topItem);
+        inventario.setItem(11, encantamentos);
+        inventario.setItem(12, locaisDeMina);
         inventario.setItem(13, boostersHead);
     }
 

@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -25,18 +24,24 @@ public class Picareta {
     private final String dono;
     private final List<LevelPicareta> leveis = new ArrayList<>();
     private int nivel;
+    private int multiplicadorDeLevel;
     private BigDecimal energia;
+    private BigDecimal blocoQuebrados;
 
-    public Picareta(String uuid, String dono, int nivel, BigDecimal energia) {
+    public Picareta(String uuid, String dono, int nivel, int multiplicadorDeLevel, BigDecimal energia, BigDecimal blocosQuebrados) {
         this.uuid = uuid;
         this.dono = dono;
         this.nivel = nivel;
+        this.multiplicadorDeLevel = multiplicadorDeLevel;
         this.energia = energia;
+        this.blocoQuebrados = blocosQuebrados;
     }
 
     public void salvarDados() {
         PicaretasFile.get().set(String.format("picaretas.%s.nivel", uuid), nivel);
+        PicaretasFile.get().set(String.format("picaretas.%s.multiplicadorDeLevel", uuid), multiplicadorDeLevel);
         PicaretasFile.get().set(String.format("picaretas.%s.energia", uuid), energia.toString());
+        PicaretasFile.get().set(String.format("picaretas.%s.blocosQuebrados", uuid), blocoQuebrados.toString());
 
         List<String> leveisStrings = new ArrayList<>();
 
@@ -46,6 +51,10 @@ public class Picareta {
 
         PicaretasFile.get().set(String.format("picaretas.%s.leveis", uuid), leveisStrings);
         PicaretasFile.save();
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public String getDono() {
@@ -63,6 +72,11 @@ public class Picareta {
         picaretaLore.add(String.format(" §a■ §fNível: §a%s§7/§a%s", nivel, 100));
         picaretaLore.add(String.format(" §6■ §fEnergia: §e%s§7/§e%s", new ConverterQuantia(energia).emLetras(), new ConverterQuantia(BigDecimal.valueOf((nivel + 1) * 2000L)).emLetras()));
         picaretaLore.add("");
+
+        if(dono.startsWith(".")) {
+            picaretaLore.add("§7(Shift + Clique para abrir os encantamentos)");
+            picaretaLore.add("");
+        }
 
         leveis.forEach((level) -> {
             picaretaLore.add(String.format("§7%s %s", level.getMeta().getTitle(), level.getLevelAtual()));
@@ -150,6 +164,14 @@ public class Picareta {
         Picaretas.addPicaretaModificada(this);
     }
 
+    public int getMultiplicadorDeLevel() {
+        return multiplicadorDeLevel;
+    }
+
+    public void setMultiplicadorDeLevel(int multiplicadorDeLevel) {
+        this.multiplicadorDeLevel = multiplicadorDeLevel;
+    }
+
     public BigDecimal getEnergia() {
         return energia;
     }
@@ -161,5 +183,14 @@ public class Picareta {
     public void setEnergia(BigDecimal energia) {
         this.energia = energia;
         Picaretas.addPicaretaModificada(this);
+    }
+
+    public void addBlocoQuebrado() {
+        this.blocoQuebrados = blocoQuebrados.add(BigDecimal.valueOf(1));
+        Picaretas.addPicaretaModificada(this);
+    }
+
+    public BigDecimal getBlocosQuebrados() {
+        return blocoQuebrados;
     }
 }

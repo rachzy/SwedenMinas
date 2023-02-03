@@ -14,7 +14,9 @@ import com.redesweden.swedenminas.functions.InstantFirework;
 import com.redesweden.swedenminas.functions.PastedBlock;
 import com.redesweden.swedenminas.functions.SerializeToScoreboard;
 import com.redesweden.swedenminas.types.RecompensaTipo;
+import com.redesweden.swedenranks.data.Ranks;
 import com.redesweden.swedenranks.models.PlayerRank;
+import com.redesweden.swedenranks.models.Rank;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
 
 public class PlayerMina {
     private final String nickname;
-    private ItemStack[] inventarioPassado;
+    private final ItemStack[] inventarioPassado;
     private final Location localPassado;
     private final Mina mina;
 
@@ -73,6 +75,52 @@ public class PlayerMina {
             corIP = "§e";
         }
 
+        Rank proximoRank = playerRank.getRank();
+        int level = playerRank.getLevel() + 1;
+
+        if (playerRank.getLevel() == playerRank.getRank().getLeveis()) {
+            proximoRank = Ranks.getRankPorPosicaoHierarquica(Ranks.getPosicaoPorRank(playerRank.getRank()) + 1);
+            level = 1;
+        }
+
+        BigDecimal custoProximoRankMoney;
+        BigDecimal custoProximoRankFlocos;
+
+        if(proximoRank == null) {
+            custoProximoRankMoney = BigDecimal.valueOf(1);
+            custoProximoRankFlocos = BigDecimal.valueOf(1);
+        } else {
+            custoProximoRankMoney = proximoRank.getCustoDeEvolucaoEmMoney().multiply(BigDecimal.valueOf(level));
+            custoProximoRankFlocos = proximoRank.getCustoDeEvolucaoEmFlocos().multiply(BigDecimal.valueOf(level));
+        }
+
+        BigDecimal porcentagemMoneyBD = ((BigDecimal) playerSaldo.getSaldo(false)).multiply(BigDecimal.valueOf(100)).divideToIntegralValue(custoProximoRankMoney);
+        BigDecimal porcentagemFlocosBD = playerFlocos.getFlocos().multiply(BigDecimal.valueOf(100)).divideToIntegralValue(custoProximoRankFlocos);
+
+        int porcentagemMoney = 100;
+        int porcentagemFlocos = 100;
+
+        if (porcentagemMoneyBD.compareTo(BigDecimal.valueOf(100)) < 0) {
+            porcentagemMoney = porcentagemMoneyBD.intValue();
+        }
+
+        if (porcentagemFlocosBD.compareTo(BigDecimal.valueOf(100)) < 0) {
+            porcentagemFlocos = porcentagemFlocosBD.intValue();
+        }
+
+        int porcentagemFinal = (porcentagemMoney + porcentagemFlocos) * 100 / 200;
+
+        String quadradosPorcentagem = " ";
+        for (int i = 0; i <= 100; i += 20) {
+            if ((i > 0 && porcentagemFinal >= i) || (porcentagemFinal >= i + 1)) {
+                quadradosPorcentagem = quadradosPorcentagem.concat(String.format("§a▌%s", i < 100 ? "-" : ""));
+            } else {
+                quadradosPorcentagem = quadradosPorcentagem.concat(String.format("§7▌%s", i < 100 ? "-" : ""));
+            }
+        }
+
+        quadradosPorcentagem = quadradosPorcentagem.concat(String.format(" §e(%s%s)", porcentagemFinal, "%"));
+
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = manager.getNewScoreboard();
 
@@ -81,21 +129,24 @@ public class PlayerMina {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         Score blank1 = objective.getScore("\u0020");
-        blank1.setScore(13);
+        blank1.setScore(14);
 
         Score rank = objective.getScore(String.format(" §7Seu rank: %s", playerRank.getRank().getTituloPorLevel(playerRank.getLevel())));
-        rank.setScore(12);
+        rank.setScore(13);
+
+        Score porcentagem = objective.getScore(quadradosPorcentagem);
+        porcentagem.setScore(12);
 
         Score blank2 = objective.getScore("\u0020\u0020");
         blank2.setScore(11);
 
-        Score money = objective.getScore(String.format(" §7| §fSaldo: §a$%s", playerSaldo.getSaldo(true)));
+        Score money = objective.getScore(String.format(" §a| §fSaldo: §a$%s", playerSaldo.getSaldo(true)));
         money.setScore(10);
 
-        Score cash = objective.getScore(String.format(" §7| §fCash: §6✰%s", new ConverterQuantia(playerCash.getCash()).emLetras()));
+        Score cash = objective.getScore(String.format(" §6| §fCash: §6✰%s", new ConverterQuantia(playerCash.getCash()).emLetras()));
         cash.setScore(9);
 
-        Score flocos = objective.getScore(String.format(" §7| §fFlocos: §b❄%s", new ConverterQuantia(playerFlocos.getFlocos()).emLetras()));
+        Score flocos = objective.getScore(String.format(" §b| §fFlocos: §b❄%s", new ConverterQuantia(playerFlocos.getFlocos()).emLetras()));
         flocos.setScore(8);
 
         Score blank3 = objective.getScore("\u0020\u0020\u0020");
@@ -157,6 +208,10 @@ public class PlayerMina {
         PlayerSaldo playerSaldo = Players.getPlayer(nickname);
         PlayerFlocos playerFlocos = com.redesweden.swedenflocos.data.Players.getPlayerPorNickname(nickname);
         Picareta picareta = Picaretas.getPicaretaPorDono(nickname);
+
+        if(!quebradoComEncantamento) {
+            picareta.addBlocoQuebrado();
+        }
 
         final BigDecimal[] moneyFinal = {mina.getValorBloco()};
         final BigDecimal[] flocosFinal = {new BigDecimal(1)};
@@ -239,7 +294,7 @@ public class PlayerMina {
                 case SUPER:
                     if (level.getLevelAtual() > 0 && !quebradoComEncantamento) {
                         int chanceSuper = new Random().nextInt(60000);
-                        if (chanceSuper <= level.getLevelAtual() / 45) {
+                        if (chanceSuper <= level.getLevelAtual() / 75) {
                             double xMaior = Math.max(mina.getPos1().getX(), mina.getPos2().getX());
                             double xMenor = Math.min(mina.getPos1().getX(), mina.getPos2().getX());
 
@@ -297,7 +352,7 @@ public class PlayerMina {
                 player.sendMessage("§2§lMINAS §e>> §cSeu inventário está cheio! Esvazi-o para receber recompensas.");
             }
         } else {
-            ActionBarAPI.sendActionBar(player, String.format("§2§lMINAS §e>> §fVocê ganhou §a$%s §fpor ter quebrado este bloco. %s", new ConverterQuantia(moneyFinal[0]).emLetras(), mensagemBoost));
+            ActionBarAPI.sendActionBar(player, String.format("§2§lMINAS §e>> §fVocê ganhou §a$%s §fe §b❄%s §fpor ter quebrado este bloco. %s", new ConverterQuantia(moneyFinal[0]).emLetras(), new ConverterQuantia(flocosFinal[0]).emLetras(), mensagemBoost));
         }
 
         picareta.addEnergia();

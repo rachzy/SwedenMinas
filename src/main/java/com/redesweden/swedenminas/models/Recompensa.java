@@ -2,8 +2,7 @@ package com.redesweden.swedenminas.models;
 
 import com.redesweden.swedencaixas.data.Caixas;
 import com.redesweden.swedencash.models.ChequeCash;
-import com.redesweden.swedenmaquinas.functions.MaquinasFactory;
-import com.redesweden.swedenmaquinas.types.TipoMaquina;
+import com.redesweden.swedenflocos.models.ChequeFlocos;
 import com.redesweden.swedenminas.types.RecompensaTipo;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +22,7 @@ public class Recompensa {
 
     public ItemStack gerar() {
         if(tipo == RecompensaTipo.MINA) {
-            int chance = new Random().nextInt(201);
+            int chance = new Random().nextInt(401);
             if(chance >= 50 + sorte) {
                 return new ItemStack(Material.AIR);
             }
@@ -33,17 +32,17 @@ public class Recompensa {
             }
 
             if(chance >= 10 + sorte) {
-                return new MaquinasFactory(TipoMaquina.FLOCOS, new BigDecimal("300")).criar();
+                return new ChequeFlocos("Mina", new BigDecimal("5000"), LocalDateTime.of(2023, 2, 1, 1, 10)).gerar();
             }
 
             if(chance >= 1 + sorte) {
                 return Caixas.getCaixaPorID("MISTERIOSA").getCaixa(1);
             }
 
-            return new MaquinasFactory(TipoMaquina.CASH, new BigDecimal("50")).criar();
+            return Caixas.getCaixaPorID("MAQUINAS").getCaixa(1);
         }
 
-        int chance = new Random().nextInt(2301);
+        int chance = new Random().nextInt(3701);
 
         int chanceAdicional = 1;
 
@@ -60,21 +59,21 @@ public class Recompensa {
         }
 
         if(chance >= 100 * chanceAdicional) {
-            return Caixas.getCaixaPorID("MITICA").getCaixa(1);
+            return Caixas.getCaixaPorID("MAQUINAS").getCaixa(1);
         }
 
         if(chance >= 50 * chanceAdicional) {
-            return Caixas.getCaixaPorID("ENCANTAMENTOS").getCaixa(1);
+            return Caixas.getCaixaPorID("MITICA").getCaixa(1);
         }
 
         if(chance >= 20 * chanceAdicional) {
-            return new ChequeCash("§b§lNEVASCA", new BigDecimal("30000"), LocalDateTime.of(2022, 1, 12, 12, 43)).gerar();
+            return new ChequeCash("§b§lNEVASCA", new BigDecimal("3000"), LocalDateTime.of(2022, 1, 12, 12, 43)).gerar();
         }
 
         if(chance >= 3 * chanceAdicional) {
-            return Caixas.getCaixaPorID("VIP").getCaixa(1);
+            return Caixas.getCaixaPorID("BOSS").getCaixa(1);
         }
 
-        return Caixas.getCaixaPorID("BOSS").getCaixa(1);
+        return Caixas.getCaixaPorID("VIP").getCaixa(1);
     }
 }

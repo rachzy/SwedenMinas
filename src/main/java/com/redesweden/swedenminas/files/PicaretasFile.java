@@ -39,7 +39,11 @@ public class PicaretasFile {
                 BigDecimal energia = new BigDecimal(picaretasFile.getString(String.format("picaretas.%s.energia", uuid)));
                 List<String> leveis = picaretasFile.getStringList(String.format("picaretas.%s.leveis", uuid));
 
-                Picareta picareta = new Picareta(uuid, dono, nivel, energia);
+                int multiplicadorDeLevel = Math.max(picaretasFile.getInt(String.format("picaretas.%s.multiplicadorDeLevel", uuid)), 1);
+
+                BigDecimal blocosQuebrados = new BigDecimal(picaretasFile.getString(String.format("picaretas.%s.blocosQuebrados", uuid)));
+
+                Picareta picareta = new Picareta(uuid, dono, nivel, multiplicadorDeLevel, energia, blocosQuebrados);
 
                 leveis.forEach((level) -> {
                     String[] levelSplit = level.split(",");
@@ -53,7 +57,7 @@ public class PicaretasFile {
             }
         }
 
-        save();
+        Picaretas.calcularTopPicaretas();
         Picaretas.iniciarSalvamentoAutomatico();
     }
 
@@ -62,9 +66,11 @@ public class PicaretasFile {
         String uuid = player.getUniqueId().toString();
         picaretasFile.set(String.format("picaretas.%s.dono", uuid), player.getName());
         picaretasFile.set(String.format("picaretas.%s.nivel", uuid), 0);
+        picaretasFile.set(String.format("picaretas.%s.multiplicadorDeLevel", uuid), 1);
         picaretasFile.set(String.format("picaretas.%s.energia", uuid), 0);
+        picaretasFile.set(String.format("picaretas.%s.blocosQuebrados", uuid), 0);
 
-        Picareta picareta = new Picareta(player.getUniqueId().toString(), player.getName(), 0, new BigDecimal("0"));
+        Picareta picareta = new Picareta(player.getUniqueId().toString(), player.getName(), 0, 1, new BigDecimal("0"), new BigDecimal("0"));
 
         List<String> leveis = new ArrayList<>();
 
